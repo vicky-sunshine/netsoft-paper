@@ -547,14 +547,15 @@ Our object is to demonstrate that our vCPE system can help the telco to reduce t
   \caption{vCPE Service Design Architecture}
   \label{fig:service_overview}
 \end{figure}
-With the concept of SDN-enabled\cite{sdn-enabled} VNFs in Fig. \ref{fig:service_overview}, the network functions have been achived by the synergies between compute and network infrastructures. The former is mainly responsible for dealing with stateful processing, and the latter is used for stateless processing component.
+With the concept of SDN-enabled\cite{sdn-enabled} VNFs in Fig. \ref{fig:service_overview}, the network functions have been achived by the synergies between compute and network infrastructures. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch, used for stateless processing.
 
-\subsubsection{Stateful Processing Componemt}
-This component have to perform more complex algorithm, keep the state associated with the VNF and provide interface for service providers or customers to configure and update the behavior of the stateless datapath processing component, since software is good at these tasks. It's worth noting that we use southbound APIs of SDN controller to handle the interface between the stateful and stateless component with OpenFlow protocol, which was originally designed for this.
+\subsubsection{Stateful Processing component (VNF controller in container)}
+This component have to perform more complex algorithm, keep the state associated with the VNF and provide interface for service providers or customers to configure and update the behavior of the stateless datapath processing component, since software is good at these tasks. We use SDN controller to implement the NFV controller and it's worth noting that we use southbound APIs of SDN controller to handle the interface between the stateful and stateless component with OpenFlow protocol, which was originally designed for this.
 
-\subsubsection{Stateless Processing Componemt}
+\subsubsection{Stateless Processing component (SDN datapath)}
 Stateless processing component, are implemented by SDN datapath resources, which is optimized for data plane traffic processing. Since SDN datapath have decoupled the control plane and data plane, so it can accept the control message from the stateful processing component.
 
+Using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch, for example, packet filtering and packet counting, to load-off the computing resources. If we want to update our service, we just need to update the statful component, since the stateless component just follow the command from stateful components.
 
 \subsection{Service Deployment Model} \label{ssec:vcpe_deploy}
 
@@ -565,22 +566,30 @@ Stateless processing component, are implemented by SDN datapath resources, which
 \label{fig:vcpe_deploy}
 \end{figure}
 
-In this picture, each green area is a local network domain of customer. At the gateway of this domain, there's a SDN-enabled switch. The customer can subscribe to our vcpe service through our vcpe dashboard. after subscribing, the vCPE system will create a new docker container, in which running a SDN controller we developed. The customer only need to setup the gateway SDN switch to connect the SDN controller by the OpenFlow protocol, then the switch will handle these service.
+With architecure mentioned in \ref{ssec:service_design}, we come up with a network function service deployment model.  Because the algorithm and policies handled by computing infrastructures, and the generic network devices, that is, SDN switches, only do stateless processing. The customer only need to buy a general SDN switch at their home gateway and subscribe different NFV controller through our vCPE platform, they will have a different network function service.
+
+In figure \ref{fig:vcpe_deploy} illustrated the service deployment model, each green area is a local network domain of customer. At the gateway of this domain, there's a SDN-enabled switch. The customer can subscribe to our vcpe service through our vcpe dashboard. after subscribing, the vCPE system will create a new docker container, in which running a SDN controller we developed. The customer only need to setup the gateway SDN switch to connect the SDN controller by the OpenFlow protocol, then the switch will handle these service.
 
 \subsection{Architecture of the vCPE system} \label{ssec:vcpe_archi}
 \subsubsection{System Overview}
-\subsubsection{System Implementation}
-\subsubsubsection{Infrastructure Controller}
-% shipyard
 
-\subsubsubsection{Infrastructure Orchestrator}
+\subsubsection{Infrastructure Controller}
+% shipyard
+The infrastructure controller is a composed Docker management server with the ability to manage the Docker resources like containers and images. The infrastructure does'nt handle the customer authentication or maintaining the state of running service, it just follow the request from the infrastrcure orchestrator to create, delete, start, stop and inspect containers.
+
+\subsubsection{Infrastructure Orchestrator}
+% api server
+The infrasctructure orchestrator plays the key role of our system. It connecting and automating of workflows when we deploy our services. When a customer subscribes, the infrasctructure orchestrator authenticates the customer first, next it will call the infrastructure controllerto create a container for this customer, and update information in database afterwards. It handle the entire lifecycle of our vCPE service.
+
+
+\subsubsection{Cloud Database}
 % api server
 
-\subsubsubsection{VNF Controllers}
-% sdn controller
-
-\subsubsubsection{VNF Orchestrator}
+\subsubsection{VNF Orchestrator}
 % web server
+
+\subsubsection{VNF Controllers}
+% sdn controller
 
 
 \section{Virtula CPE Services}
