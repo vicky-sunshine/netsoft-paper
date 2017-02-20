@@ -114,7 +114,7 @@
 
 % *** GRAPHICS RELATED PACKAGES ***
 %
-\ifCLASSINFOpdf
+\ifCLASSINFOpdf{}
   % \usepackage[pdftex]{graphicx}
   % declare the path(s) where your graphic files are
   % \graphicspath{{../pdf/}{../jpeg/}}
@@ -434,8 +434,7 @@
 %
 % For peerreview papers, this IEEEtran command inserts a page break and
 % creates the second title. It will be ignored for other modes.
-\IEEEpeerreviewmaketitle
-
+\IEEEpeerreviewmaketitle{}
 % Introduction
 % First paragraph of paper need be big Alhabet
 % \section{Introduction}
@@ -538,16 +537,16 @@
 
 
 \section{vCPE System Overview}
-Our object is to demonstrate that our vCPE system can help the telco to reduce the Capex and Opex when deploying, maintaining and updating CPE service. This section describes our vCPE system architecture and how we achieve our goal. In the subsection \ref{ssec:service_design}, we will introduce the overview architecture of our virtual CPE Service. Then in subsection \ref{ssec:vcpe_deploy}, we will explain that through the advantages of service architecture, our vCPE system can deploy our service to the customer easily. In the subsection \ref{ssec:vcpe_archi}, we will give details of the whole vCPE system.
+Our object is to demonstrate that our vCPE system can help the telco to reduce the Capex and Opex when deploying, maintaining and updating CPE service. This section describes our vCPE system architecture and how we achieve our goal. In the subsection\ref{ssec:service_design}, we will introduce the overview architecture of our virtual CPE Service. Then in subsection\ref{ssec:vcpe_deploy}, we will explain that through the advantages of service architecture, our vCPE system can deploy our service to the customer easily. In the subsection\ref{ssec:vcpe_archi}, we will give details of the whole vCPE system.
 
-\subsection{vCPE Service Design Overview} \label{ssec:service_design}
+\subsection{vCPE Service Design Overview}\label{ssec:service_design}
 \begin{figure}[!t]
   \centering
   \includegraphics[width=3in]{./figures/service_design_overview}
   \caption{vCPE Service Design Architecture}
-  \label{fig:service_overview}
+\label{fig:service_overview}
 \end{figure}
-With the concept of SDN-enabled\cite{sdn-enabled} VNFs in Fig. \ref{fig:service_overview}, the network functions have been achived by the synergies between compute and network infrastructures. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch, used for stateless processing.
+With the concept of SDN-enabled\cite{sdn-enabled} VNFs in Fig.\ref{fig:service_overview}, the network functions have been achived by the synergies between compute and network infrastructures. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch, used for stateless processing.
 
 \subsubsection{Stateful Processing component (VNF controller in container)}
 This component have to perform more complex algorithm, keep the state associated with the VNF and provide interface for service providers or customers to configure and update the behavior of the stateless datapath processing component, since software is good at these tasks. We use SDN controller to implement the NFV controller and it's worth noting that we use southbound APIs of SDN controller to handle the interface between the stateful and stateless component with OpenFlow protocol, which was originally designed for this.
@@ -557,7 +556,7 @@ Stateless processing component, are implemented by SDN datapath resources, which
 
 Using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch, for example, packet filtering and packet counting, to load-off the computing resources. If we want to update our service, we just need to update the statful component, since the stateless component just follow the command from stateful components.
 
-\subsection{Service Deployment Model} \label{ssec:vcpe_deploy}
+\subsection{Service Deployment Model}\label{ssec:vcpe_deploy}
 
 \begin{figure}[!t]
 \centering
@@ -566,11 +565,11 @@ Using the advantages of this architecture, we can assign stateless or light-weig
 \label{fig:vcpe_deploy}
 \end{figure}
 
-With architecure mentioned in \ref{ssec:service_design}, we come up with a network function service deployment model.  Because the algorithm and policies handled by computing infrastructures, and the generic network devices, that is, SDN switches, only do stateless processing. The customer only need to buy a general SDN switch at their home gateway and subscribe different NFV controller through our vCPE platform, they will have a different network function service.
+With architecure mentioned in\ref{ssec:service_design}, we come up with a network function service deployment model.  Because the algorithm and policies handled by computing infrastructures, and the generic network devices, that is, SDN switches, only do stateless processing. The customer only need to buy a general SDN switch at their home gateway and subscribe different NFV controller through our vCPE platform, they will have a different network function service.
 
-In figure \ref{fig:vcpe_deploy} illustrated the service deployment model, each green area is a local network domain of customer. At the gateway of this domain, there's a SDN-enabled switch. The customer can subscribe to our vcpe service through our vcpe dashboard. after subscribing, the vCPE system will create a new docker container, in which running a SDN controller we developed. The customer only need to setup the gateway SDN switch to connect the SDN controller by the OpenFlow protocol, then the switch will handle these service.
+In figure\ref{fig:vcpe_deploy} illustrated the service deployment model, each green area is a local network domain of customer. At the gateway of this domain, there's a SDN-enabled switch. The customer can subscribe to our vcpe service through our vcpe dashboard. After subscribing, the vCPE system will create a new docker container, in which running a SDN controller we developed. The customer only need to setup the gateway SDN switch to connect the SDN controller by the OpenFlow protocol, then the switch will handle these service.
 
-\subsection{Architecture of the vCPE system} \label{ssec:vcpe_archi}
+\subsection{Architecture of the vCPE system}\label{ssec:vcpe_archi}
 \subsubsection{System Overview}
 \begin{figure}[!t]
 \centering
@@ -579,7 +578,7 @@ In figure \ref{fig:vcpe_deploy} illustrated the service deployment model, each g
 \label{fig:vcpe_system}
 \end{figure}
 
-The architecture as shown in Fig \ref{fig:vcpe_system} including of a Infrastructure Controller, Infrastructure Orchestrator, Cloud Database, VNF Controllers and VNF Orchestrator. The Infrastructure Orchestrator, VNF Orchestrator and Cloud Database are web servers running on virtual machines hosting in the cloud using Amazon Web Services (AWS) Data Center also the Infrastructure Controller is a powerful physical blade server running in our laboratory. Each component is introduced in the subsection below.
+The architecture as shown in Fig\ref{fig:vcpe_system} including of a Infrastructure Controller, Infrastructure Orchestrator, Cloud Database, VNF Controllers and VNF Orchestrator. The Infrastructure Orchestrator, VNF Orchestrator and Cloud Database are web servers running on virtual machines hosting in the cloud using Amazon Web Services (AWS) Data Center also the Infrastructure Controller is a powerful physical blade server running in our laboratory. Each component is introduced in the subsection below.
 
 \subsubsection{Infrastructure Controller}
 % shipyard
@@ -597,7 +596,7 @@ The cloud database is used for restoreing the of our vCPE services, which includ
 \subsubsection{VNF Controllers}
 % sdn controller
 
-VNF Controllers contains a SDN controller developed with ryu framework and a remote launcher module. The SDN controller does not have a remote launcher module to remotely execute a SDN controller. We built a light-weight server as a launcher module to resolve the remotely execution issue. The remote launcher module monitor the SDN controller process ID (PID) and properly kill the SDN controller process ID when on demand. When the infrastructure controller once create the container, the remote module will run up initiallly, waiting request from VNF VNF Orchestrator. The details of SDN controller desgin will be presented at section \ref{ssec:vcpe_services}
+VNF Controllers contains a SDN controller developed with ryu framework and a remote launcher module. The SDN controller does not have a remote launcher module to remotely execute a SDN controller. We built a light-weight server as a launcher module to resolve the remotely execution issue. The remote launcher module monitor the SDN controller process ID (PID) and properly kill the SDN controller process ID when on demand. When the infrastructure controller once create the container, the remote module will run up initiallly, waiting request from VNF VNF Orchestrator. The details of SDN controller desgin will be presented at section\ref{ssec:vcpe_services}
 
 
 \subsubsection{VNF Orchestrator}
@@ -613,7 +612,12 @@ Through the web UI provided by the VNF Orchestrator, the customers can subscribe
 \label{fig:vcpe_dashboard}
 \end{figure}
 
-\section{Virtual CPE Services} \label{ssec:vcpe_services}
+\section{Virtual CPE Services}\label{ssec:vcpe_services}
+\subsection{Multiple Flow Flow Tables}
+
+
+
+
 
 \newpage
 
