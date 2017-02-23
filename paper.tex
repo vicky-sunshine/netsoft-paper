@@ -654,7 +654,7 @@ As a result, we can offer the user the best network quality in the limited netwo
 In this paper, our QoS integrates with a flow classification engine
 and offers the three ways of bandwidth management:
 \begin{itemize}
-\item For a specific host..
+\item For a specific host.
 \item For a specific host.
 \item For a specific application from a host or a domain.
 \end{itemize}
@@ -865,7 +865,7 @@ In classifying phase, we only use those mappings which have been used by one app
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/nat_evaluation}
+\includegraphics[width=3in]{./figures/nat_evaluation_scenario}
 \caption{Multiple Table Performance Evaluation Scenario}
 \label{fig:nat_evaluation}
 \end{figure}
@@ -878,9 +878,8 @@ In classifying phase, we only use those mappings which have been used by one app
 \end{figure}
 
 The single table framework implementation is easier than multiple table framework, but the multiple table framework is more flexible. To verify the efficacy of multiple table vCPE framework, this experiment use the NAT service to compare the throughput between single table vCPE and multiple table vCPE.
-To begin with, an overview of the experiment environment illustrated in Fig. \ref{fig:nat_evaluation}.  In this experiment, the controller is Ryu SDN controller, and run on the Dell PowerEdge R630 Rack Server. The SDN switch employ Pica8 P-3290 switch. We used the tool that iPerf2.0 could generate the network traffic. The iPerf server would be set a public IP address. And iPerf client connect to the SDN switch that the controller would execute the NAT service on the single and multiple table vCPE framework.
-We use the iPerf  to generate the UDP packets and send to server from client, and set the fixed value to bandwidth at 100Mbps. These experiments would use diffrent payload sizes to inspect their performances.
-As shown in Fig. \ref{nat_evaluation_result}, the throughput value show that the performances of large packets such as 1024 bytes and 1470 bytes is better than small packets. Because the NAT service need to set the packet header field and small payload size would send more packets to server at the same time, the performance of larger packets is well. We can see that the throughput value of multiple table framework is close to single table framework. So we can realize the multiple table framework is more flexible than single table framework, and the performance is close to each other.
+;;We use the iPerf  to generate the UDP packets and send to server from client, and set the fixed value to bandwidth at 100Mbps. These experiments would use diffrent payload sizes to inspect their performances.
+As shown in Fig. \ref{fig:nat_evaluation_result}, the throughput value show that the performances of large packets such as 1024 bytes and 1470 bytes is better than small packets. Because the NAT service need to set the packet header field and small payload size would send more packets to server at the same time, the performance of larger packets is well. We can see that the throughput value of multiple table framework is close to single table framework. So we can realize the multiple table framework is more flexible than single table framework, and the performance is close to each other.
 
 
 
