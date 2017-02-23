@@ -570,6 +570,7 @@ Figure \ref{fig:vcpe_deploy} illustrates the service deployment model. Each gree
 
 \subsection{Architecture of the vCPE framework}
 \subsubsection{System Overview}
+
 \begin{figure}[!t]
 \centering
 \includegraphics[width=3in]{./figures/vcpe_framework_overview}
@@ -636,12 +637,7 @@ Via vCPE GUI interface, the network manager can set up the WAN port of SDN switc
 public IP, default gateway, and local network address when using this function.
 
 \subsubsection{DHCP}
-% The DHCP Service automatically provide the IP address to DHCP client.
-% To implement the function, the controller handle the DCHP packets ( UDP protocol with source port 68 and destination port67)
-% and the workflow is as following:
-% (1) Waiting for DHCP client send DHCP discover request.
-% (2) DHCP server (SDN controller) generate DHCP offer packet and send IP address to DHCP client.
-% (3) Server Receive the DHCP request from client, and then generate the DHCP acknowledgement send to client.
+DHCP service allocates IP addresses to hosts dynamically. To implement the function, the SDN controller cope with UDP packets which use port 67 and 68. It generates DHCP offer and DHCP acknowledge to reply DHCP discovery and DHCP request received from the hosts.
 
 \subsubsection{Forwarding}
 Forwarding Service is a basic service that forward traffic to its destination
@@ -690,18 +686,19 @@ The network functions of our vCPE services including Forwarding, Firewall, NAT, 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/multi_table}
+\includegraphics[width=3in]{./figures/multiple_table}
 \caption{The flow table order of our vCPE service}
 \label{fig:table-seq}
 \end{figure}
+
 
 \subsection{Service Control}
 Service control is used to enable or disable service. To enable a service, we need to modify the table-miss rule. We always put a packet-in rule in the table of the last active service as a table-miss in case that there isn't any corresponding rule. To make our service chain possible, the rules of each service except the last service contains an additional action, go to next table, so the packets can continue to pass through all active services.
 
 To disable a service, we not only need to modify the table-miss rule but also have to add an enforce rule. Each enforce rules has maximum priority and the action is goto next table. It means that packets will still pass through the disabled service's table, and the only thing they do in this table is ignoring other rules and go to next table.
 
-\subsection{Firewall}
 
+\subsection{Firewall}
 Firewall service is able to block traffic dynamically, and in this service, the packets will not cause any packet-in event.
 On the dashboard, we can specify the blocking policies. There are 4 kinds of policies:
 \begin{itemize}
@@ -713,33 +710,155 @@ On the dashboard, we can specify the blocking policies. There are 4 kinds of pol
 
 For different policies, the controller applies corresponding rules to the SDN switch. After the policies are set, the blocking rules will be installed immediately. Then any traffic that hit the blocking rules will be dropped. For normal traffic, they will not be affected.
 
-As shown in Table  , all the actions of flow entries are drop. The 1st rule illustrates that SSH connection with source IP address 192.168.2.1 would be blocked. The 2nd rule shows the flow entry would block the Telnet protocol.
+As shown in Table \ref{table:fw}, all the actions of flow entries are drop. The 1st rule illustrates that SSH connection with source IP address 192.168.2.1 would be blocked. The 2nd rule shows the flow entry would block the Telnet protocol.
 
 In our multiple table model, the firewall service is located in the table 1, since once packets are caught by the blocking rules, they doesn't need to apply any other services. The packets which match the rules will be dropped immediately, and their journey in the flow table ends here. To other no-blocked packets, they pass all blocking rules and finally match the table-miss rule, which will let the packets go on the next table. The action of firewall is different from other services, since in other services, no matter what actions are taken to the packets, the packets have to go to the next table
 
 \begin{table*}[]
 \centering
-\caption{Firewall table entry}
-\label{table:firewall}
+\caption{Firewall rules in Flow Entry}
+\begin{threeparttable}
+\label{table:fw}
 \begin{tabular}{|l|l|l|l|l|l|}
 \hline
-IP proto         & IP Src     & IP Dst & L4 sport & L4 dport & Action                                                                              \\ \hline
-TCP        192.168.2.1        & * & *         & 22     & 2000     & \begin{tabular}[c]{@{}l@{}}IP Dst $\,\to\,$ 192.168.8.40; \\ L4 dport $\,\to\,$ 5566\end{tabular} \\ \hline
-140.114.71.178 & 10.10.10.1 & TCP         & 8976     & 2001     & \begin{tabular}[c]{@{}l@{}}IP Src $\,\to\,$ 192.168.8.80; \\ L4 sport $\,\to\,$ 6979\end{tabular}   \\ \hline
+IP proto & IP Src      & IP Dst       & L4 sport & L4 dport & Action \\ \hline
+TCP      & 192.168.2.1 & *            & *        & 22       & Drop   \\ \hline
+TCP      & *           & *            & *        & 23       & Drop   \\ \hline
+
 \end{tabular}
+\begin{tablenotes}
+  \small
+  \item Symbol * represents wildcard (match any value).
+\end{tablenotes}
+\end{threeparttable}
 \end{table*}
 
 
 \subsection{DHCP}
+
+
+
 \subsection{NAT}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/nat_illustrate}
+\caption{Illustration of NAT service}
+\label{fig:nat_illustration}
+\end{figure}
+The NAT service could allow a lot of hosts to use one public IP address to connect the network.
+In order to achieve this thing, SDN controller have to set the packet header filed.
+Because the SDN switch would set the field, the first packet have to go to controller.
+And controller would add the flow to SDN switch, after that the packet would not go to controller.
+It can decrease the burdens of the controller.
+
+Below is a examples to show how the NAT service modify the IP address and port number,
+as shown in Fig \ref{fig:nat_illustration}.
+
+For outgoing packet, SDN switch doesn’t have any flow entry in flow table,
+so the Packet-in event will be triggered at the beginning.
+The packet that is sent by private network host will be sent to SDN controller,
+and the packet header fields are modified by Set-Field action.
+The source IP address and source port number of outgoing packet will be modified to public IP address
+and remaped a new port number for NAT.
+For ingoing packet, the destination IP and destination port number are modified to fit private IP and port number.
+And then SDN controller add these flow entries to SDN switch, it can’t avoid that all the packet sent to controller.
+Fig. \ref{fig:nat_illustration} show the public IP address of NAT is 140.114.71.178 and a host private IP is 192.168.8.254 and port number 7878. The client sent the packet to a server with IP address 140.114.71.177 and port number 9898.
+
+As shown in Table \ref{table:nat}, when host sent the packet to server (outgoing),
+the Packet-in will be trigger, and then packet to controller.
+The Set-Field action would modify the Source IP to public IP address of NAT is 140.114.71.178 and source port to 2000.
+when the server sends back to the client (ingoing), the packet header field would be modified.
+The destination IP address and destination port number would be modified to 192.168.8.254 and 7788.
+
+\begin{table*}[]
+\centering
+\caption{Flow entry for modifying the packet header fields of packets}
+\label{table:nat}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+            &IP Src          & IP Dst          & L4 src port  & L4 dst port & Action                                                                            \\ \hline
+1. outgoing &192.168.8.254   &140.114.71.177   & 7878         & 9898        & \begin{tabular}[c]{@{}l@{}}IP Src $\,\to\,$ 140.114.71.178; \\ L4 src port $\,\to\,$ 2000\end{tabular} \\ \hline
+2. ingoing  &140.114.71.177  &140.114.71.178   & 9898         & 2000        & \begin{tabular}[c]{@{}l@{}}IP Dst $\,\to\,$ 192.168.8.254; \\ L4 dst port $\,\to\,$ 7878\end{tabular} \\ \hline
+\end{tabular}
+\end{table*}
+
+In the single table framework, we have to add the two rules to SDN switch to match the outgoing and ingoing situation.
+At the first, we predict the NAT service to be put one the last table in the multiple table framework.
+Because the NAT service need to set the packet header fields and play a role of connection to the outside network.
+And the most important thing is that the SDN switch is according to order of table to match.
+We have to consider the outgoing and ingoing situations.
+As a result of all the above factors combined,
+the NAT service is located at the first and the last table in our multiple table framework.
+
+
 \subsection{QoS}
 \subsection{Forwarding}
+In this service, when the first packet in a new connection incoming, it will cause a packet-in event because there is no corresponding rule. When controller receives the packet, it will record IP-layer information, including source IP, destination IP, input port number, source mac address and destination mac address. With the recorded information, the controller is able to install a 5-tuple forwarding rule for this connection and following packets don’t need to packet-in again. The 5-tuple is source IP, destination IP, network layer protocol, source layer 4 port, and destination layer 4 port.
+
+In order to gather per-session statistics information, 5-tuple rules are needed. This is why we don’t add rules  based on mac address.  The controller installs a pair of dummy rules for every connection, and then request the switch to get current flow statistics every second. In this way, we can get the real-time bandwidth statistics of each connection by just subtracting the byte count from byte count of last second.
 
 
 
 \section{Application Identifier method} \label{sec:app_classification}
+In order to let QoS management system be able to control or distribute bandwidth at application level, we designed and implemented an application identification system (also called flow classification system) to judge each flow is established by what application. In other words, the system can classify each flow as an application name in real time, rather than a rough category or a transport layer protocol.
+We use supervised machine learning (ML) and a method based on inspecting domain name service (DNS) responses to do flow classification. Except for DNS responses, the system only analyzes transport layer information of packets without inspecting their payload
 
 
+\subsection{Architecture of our application identification system}
+There are training phase (also called preparation phase) and classifying phase, their architectures are shown in Fig \ref{fig:classifcation_training} and Fig \ref{fig:classifcation_classifying} respectively. These architectures can be integrated, and do training and classifying in the same time. The detail will be mentioned in the following paragraph
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/classification_training}
+\caption{Architecture of our application identification system in training phase}
+\label{fig:classifcation_training}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/classification_classifying}
+\caption{Architecture of our application identification system in classifying phase}
+\label{fig:classifcation_classifying}
+\end{figure}
+
+\subsection{Overall procedure of application identification}
+In training phase, we generate some data needed by ML and the method based on inspecting DNS responses. In classifying phase, if a flow meet some requirement, we use the method based on inspecting DNS response to classify; otherwise, we use ML to classify.
+
+\subsection{Procedure of Supervised ML in our system}
+In training phase, the architecture is show in Fig I. Flow classification engine is to build classification model by training data from Trainer, and update the model when new training data comes. Trainer is to analyze traffic from mirror port to get flow attributes. After Trainer finishes calculating flow attributes of a flow, it gets ground truth of the flow from Scanner or App Meta Server to generate training data, and sends training data to flow classification engine. App Meta Server is to store mappings of 5-tuple and ground truth from Scanner, and accept queries from Trainer. Scanner is to get mappings of 5-tuple and ground truth from OS.
+In classifying phase, the architecture is shown in Fig. Flow classification engine is to use flow attributes from Classifier and classification model to get a classification result, and sends classification result to Classifier. Classifier is to analyze traffic from mirror port to get flow attributes. After Classifier finishes calculating flow attributes of a flow, it use flow attributes to ask flow classification engine for classification result if needed.
+
+\subsection{Flow attributes we adopted in ML}
+In ML, when system calculates flow attributes, we only use transport layer information of packets which have payload. We use Application Round (APPR) proposed by [] to analyze flow behavior. We use number of packets, packet sizes, transmission time, transmission direction, throughput, and APPR to define flow attributes. There are 69 attributes in total, as defined in our previous work [].
+
+\subsection{Algorithms we adopted in ML}
+We use algorithms implemented by Weka, a famous open source ML tool developed at the University of Waikato. We call Weka Java API to build classification model. We use three algorithms, namely RandomSupSpace with RandomTree [], FilterClassifier with discretization and RandomTree [], and RandomCommittee with RandomTree [].
+
+\subsection{Procedure of a method based on inspecting DNS response in our system}
+In training phase, we collect the mappings of server IP and application name. A mapping of server IP and application name means the application has ever establish connection with the server whose IP is the server IP, and the server IP has ever occurred in any DNS response we have captured.
+In classifying phase, we only use those mappings which have been used by one application to classify. When system detect a flow, we check whether source IP or destination IP of the flow match any server IP of those mappings. If it matches any server IP, we regard corresponding application name as classification result; otherwise, we use flow attributes of the flow and classification model to classify.
+
+
+
+\section{Performance Evaluation}
+\subsection{Multiple Table Performance}
+
+\subsection{Accuracy of Application Identification }
+
+\subsubsection{Testing data set}
+Testing data set are mappings of flow attributes and ground truth (also called rules). This testing data set were generated by our system in our lab in National Tsing Hua University in Taiwan in 2016. We manually operated applications to generate traffic. After the system generated rules, it exported them into a file, because we wanted to do 10-fold cross validation on the testing data set. There are 14659 rules in total, and there are 137 applications if we view each platform version of an application as one application.
+(提fig 1)
+
+\subsubsection{Validation method}
+Although the system can do online training and classifying, we do offline training and classifying. More specifically, when we did online training to analyze traffic, get ground truth, and export the rules into a file. We do 10-fold cross validation on the rules. There are 10 rounds in 10-fold cross validation. Each round, we split testing data set into training dataset and classifying dataset.
+
+\subsubsection{Mapping of category names}
+We do name mapping on training dataset before we use training data set to build classification model, and do name mapping on classifying data set before we use classifying data set to calculate accuracy. The main reason is that some application have different ground truth in different operating system.
+
+\subsubsection{Accuracy matrices}
+To evaluate accuracy, we used precision, recall and F-measure (also called F1 score), as shown in Eq. (1), Eq. (2), and Eq. (3) []. In each round in 10-fold cross validation, we calculate precision and recall of each category to calculate F1 score of each category. After ten rounds, we calculate average
+
+%%
 
 
 
