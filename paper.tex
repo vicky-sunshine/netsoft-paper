@@ -422,10 +422,6 @@
 % \end{IEEEkeywords}
 
 
-
-
-
-
 % For peer review papers, you can put extra information on the cover
 % page as needed:
 % \ifCLASSOPTIONpeerreview
@@ -437,9 +433,11 @@
 \IEEEpeerreviewmaketitle{}
 % Introduction
 % First paragraph of paper need be big Alhabet
-% \section{Introduction}
-% \IEEEPARstart{T}{his}
+\section{Introduction}
+\IEEEPARstart{T}{his} document is a template for Microsoft Word versions 6.0 or later. If you are reading a paper or PDF version of this doconference. (By Eric)
 
+\section{Related Work}
+(By Eric)
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -536,25 +534,26 @@
 % \fnbelowfloat command of the stfloats package.
 
 
-\section{vCPE System Overview}
-Our object is to demonstrate that our vCPE system can help the telco to reduce the Capex and Opex when deploying, maintaining and updating CPE service. This section describes our vCPE system architecture and how we achieve our goal. In the subsection \ref{ssec:service_design}, we will introduce the overview architecture of our virtual CPE Service. Then in subsection \ref{ssec:vcpe_deploy}, we will explain that through the advantages of service architecture, our vCPE system can deploy our service to the customer easily. In the subsection \ref{ssec:vcpe_archi}, we will give details of the whole vCPE system.
 
-\subsection{vCPE Service Design Overview}\label{ssec:service_design}
-\begin{figure}[!t]
-  \centering
-  \includegraphics[width=3in]{./figures/service_design_overview}
-  \caption{vCPE Service Design Architecture}
-\label{fig:service_overview}
-\end{figure}
-With the concept of SDN-enabled \cite{sdn-enabled} VNFs in Fig. \ref{fig:service_overview}, the network functions have been achived by the synergies between compute and network infrastructures. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch, used for stateless processing.
+\section{vCPE System Overview}
+\subsection{Overview of Network Function}\label{ssec:nfv_overview}
+With the concept of SDN-enabled\cite{sdn-enabled} VNFs, SDN technology work not only a for traffic steering but also as a part of network functions. In this idea, network function have been achieved by the synergies between compute and network infrastructures. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch, used for stateless processing.
 
 \subsubsection{Stateful Processing component (VNF controller in container)}
-This component have to perform more complex algorithm, keep the state associated with the VNF and provide interface for service providers or customers to configure and update the behavior of the stateless datapath processing component, since software is good at these tasks. We use SDN controller to implement the NFV controller and it's worth noting that we use southbound APIs of SDN controller to handle the interface between the stateful and stateless component with OpenFlow protocol, which was originally designed for this.
+This component have to control the workflow, keep the state associated with the VNF, and provide interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We use SDN controller to implement the NFV controller and it’s worth noting that we use southbound APIs of SDN controller framework to handle the interface between the stateful and stateless component with OpenFlow protocol, which was originally designed for this.
 
 \subsubsection{Stateless Processing component (SDN datapath)}
-Stateless processing component, are implemented by SDN datapath resources, which is optimized for data plane traffic processing. Since SDN datapath have decoupled the control plane and data plane, so it can accept the control message from the stateful processing component.
+Stateless processing component, are implemented by SDN datapath resources, which is optimized for data plane traffic processing. Since SDN switch have decoupled the control plane and data plane, so it can accept the control message from the stateful processing component.
 
 Using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch, for example, packet filtering and packet counting, to load-off the computing resources. If we want to update our service, we just need to update the statful component, since the stateless component just follow the command from stateful components.
+
+\begin{figure}[!t]
+\centering
+\caption{Overview of network function}
+\includegraphics[width=3in]{./figures/nfv_overview}
+\label{fig:nfv_overview}
+\end{figure}
+
 
 \subsection{Service Deployment Model}\label{ssec:vcpe_deploy}
 
@@ -565,74 +564,185 @@ Using the advantages of this architecture, we can assign stateless or light-weig
 \label{fig:vcpe_deploy}
 \end{figure}
 
-With architecure mentioned in \ref{ssec:service_design}, we come up with a network function service deployment model.  Because the algorithm and policies handled by computing infrastructures, and the generic network devices, that is, SDN switches, only do stateless processing. The customer only need to buy a general SDN switch at their home gateway and subscribe different NFV controller through our vCPE platform, they will have a different network function service.
+With architecture mentioned in \ref{ssec:nfv_overview}, we come up with a network function service deployment model. Because computing infrastructures handles the algorithm and policies, and the generic network devices only do stateless processing, the customer just need to buy a general SDN switch at their home gateway and will have a different network function service by subscribing different NFV controller through our vCPE platform.
 
-In figure \ref{fig:vcpe_deploy} illustrated the service deployment model, each green area is a local network domain of customer. At the gateway of this domain, there's a SDN-enabled switch. The customer can subscribe to our vcpe service through our vcpe dashboard. After subscribing, the vCPE system will create a new docker container, in which running a SDN controller we developed. The customer only need to setup the gateway SDN switch to connect the SDN controller by the OpenFlow protocol, then the switch will handle these service.
+Figure \ref{fig:vcpe_deploy} illustrates the service deployment model. Each green area is a local network domain of customer. At the gateway of this domain, there’s a SDN-enabled switch. The customer can subscribe to our vCPE service through our dashboard. After subscribing, the vCPE system will create a new docker container, in which running a SDN controller we developed. The customer only need to setup the gateway SDN switch to connect the SDN controller by the OpenFlow protocol, then the switch will handle these service.
 
-\subsection{Architecture of the vCPE system}\label{ssec:vcpe_archi}
+\subsection{Architecture of the vCPE framework}
 \subsubsection{System Overview}
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/system_overview_v2}
-\caption{Service Syetem Overview}
-\label{fig:vcpe_system}
+\includegraphics[width=3in]{./figures/vcpe_framework_overview}
+\caption{Overview of vCPE framework}
+\label{fig:vcpe_framework}
 \end{figure}
 
-The architecture as shown in Fig \ref{fig:vcpe_system} including of a Infrastructure Controller, Infrastructure Orchestrator, Cloud Database, VNF Controllers and VNF Orchestrator. The Infrastructure Orchestrator, VNF Orchestrator and Cloud Database are web servers running on virtual machines hosting in the cloud using Amazon Web Services (AWS) Data Center also the Infrastructure Controller is a powerful physical blade server running in our laboratory. Each component is introduced in the subsection below.
+The architecture as shown in Fig \ref{fig:vcpe_framework} including of a Infrastructure Controller,
+% Fig lable to change
+Infrastructure Orchestrator, Cloud Database, VNF Controllers and VNF Orchestrator.
+The Infrastructure Orchestrator, VNF Orchestrator and Cloud Database are web servers
+Each component is introduced in the subsection below.
 
 \subsubsection{Infrastructure Controller}
-% shipyard
-The infrastructure controller is a composed Docker management server with the ability to manage the Docker resources like containers and images. The infrastructure does'nt handle the customer authentication or maintaining the state of running service, it just follow the request from the infrastrcure orchestrator to create, delete, start, stop and inspect containers.
+The infrastructure controller is a composed Docker management server
+with the ability to manage the Docker resources like containers and images.
+The infrastructure doesn't handle the customer authentication or maintaining the state of running service,
+it just follows the request from the infrastructure orchestrator to create, delete, start, stop and inspect containers.
 
 \subsubsection{Infrastructure Orchestrator}
-% api server
-The infrasctructure orchestrator plays the key role of our system. It connecting and automating of workflows when we deploy our services. When a customer subscribes, the infrasctructure orchestrator authenticates the customer first, next it will call the infrastructure controllerto create a container for this customer, and update information in database afterwards. It handle the entire lifecycle of our vCPE service.
-
+The infrastructure orchestrator plays the key role of our system.
+It connecting and automating of workflows when we deploy our services.
+When a customer subscribes, the infrastructure orchestrator authenticates the customer first,
+next it will call the infrastructure controller to create a container for this customer,
+and update information in database afterwards. It handle the entire lifecycle of our vCPE service.
 
 \subsubsection{Cloud Database}
-%
-The cloud database is used for restoreing the of our vCPE services, which include each customer's credential, customer's container settings and virtual CPE service states. The cloud database is using PostgreSQL, which is a open source, easily customized and object-relational database system. Only Infrastructure Orchestrator has read and write permissions to access cloud database.
+The cloud database is used for restoring the of our vCPE services,
+which include each customer’s credential, customer’s container settings and virtual CPE service states.
+The cloud database is using PostgreSQL, which is a open source, easily customized and object-relational database system.
+Only Infrastructure Orchestrator has permissions to access cloud database.
 
 \subsubsection{VNF Controllers}
-% sdn controller
-
-VNF Controllers contains a SDN controller developed with ryu framework and a remote launcher module. The SDN controller does not have a remote launcher module to remotely execute a SDN controller. We built a light-weight server as a launcher module to resolve the remotely execution issue. The remote launcher module monitor the SDN controller process ID (PID) and properly kill the SDN controller process ID when on demand. When the infrastructure controller once create the container, the remote module will run up initiallly, waiting request from VNF VNF Orchestrator. The details of SDN controller desgin will be presented at section \ref{ssec:vcpe_services}
-
+VNF Controllers contains a SDN controller developed with ryu framework and a remote launcher module.
+The SDN controller does not have a remote launcher module to remotely execute a SDN controller.
+We built a light-weight server as a launcher module to resolve the remotely execution issue.
+The remote launcher module monitor the SDN controller process ID (PID)
+and properly kill the SDN controller process ID when on demand.
+When the infrastructure controller once create the container, the remote module will run up initially, waiting request  from VNF Orchestrator. The details of SDN controller design will be presented at section \ref{sec:nf_mft}.
 
 \subsubsection{VNF Orchestrator}
-% web server
-The VNF Orchestrator is a Web application server hosting on Amazon Web server, being online for customer and provide a dashboard for virtual CPE and containers management and configuration.
+The VNF Orchestrator is a Web application server hosting on Amazon Web server,
+being online for customer and provide a dashboard for virtual CPE and containers management and configuration.
 
-Through the web UI provided by the VNF Orchestrator, the customers can subscribe to the desired service and without typing any command via the command line interface (CLI).  After receiving the subscribing message, the VNF orchestrator will request the infrastructure orchestrator to create a new VNF controller, and then send the virtual CPE configuration to the new VNF controller.  Based on configuration demands under different conditions, the network administrator is able to select any of the listed services on the dashboard such as NAT, DHCP, Firewall and QoS management.
+Through the web UI provided by the VNF Orchestrator,
+the customers can subscribe to the desired service and without typing any command via the command line interface (CLI).
+After receiving the subscribing message, the VNF orchestrator will request the infrastructure orchestrator to create a new VNF controller,
+and then send the virtual CPE configuration to the new VNF controller.
+Based on configuration demands under different conditions,
+the network administrator is able to select any of the listed network functions on the dashboard
+such as Firewall, NAT, DHCP and QoS management.
+
+
+\subsection{Network Functions}
+\subsubsection{Firewall}
+The firewall service could filter the packets based on packet header fields, including MAC address, IP, and layer4 protocols.
+The network manager can add new rules or remove rules to the access control list through our vCPE GUI.
+
+\subsubsection{NAT}
+The NAT service is a network function that can remap  IP address to another one.
+The Source NAT (SNAT) is typically used by internal users (inside private network) to access the Internet (outside network).
+The network function uses the action “Set-Field”, which defined by OpenFlow protocol for rewriting packet header fields.
+Via vCPE GUI interface, the network manager can set up the WAN port of SDN switch,
+public IP, default gateway, and local network address when using this function.
+
+\subsubsection{DHCP}
+% The DHCP Service automatically provide the IP address to DHCP client.
+% To implement the function, the controller handle the DCHP packets ( UDP protocol with source port 68 and destination port67)
+% and the workflow is as following:
+% (1) Waiting for DHCP client send DHCP discover request.
+% (2) DHCP server (SDN controller) generate DHCP offer packet and send IP address to DHCP client.
+% (3) Server Receive the DHCP request from client, and then generate the DHCP acknowledgement send to client.
+
+\subsubsection{Forwarding}
+Forwarding Service is a basic service that forward traffic to its destination
+and we use the Mac address learning concept to implement our forwarding function.
+
+\subsubsection{QoS}
+Quality of Service (QoS) are always used to control the traffic flows of a network
+and prevent the traffic to exceed the network capacity and cause traffic congestion.
+Therefore we implement the bandwidth management using meter
+which is defined within OpenFlow protocol 1.3 to set the limitation of the bandwidth.
+Beside achieving network functions virtualization with SDN technology,
+we also make the network administrator manage and monitor a network more easily.
+As a result, we can offer the user the best network quality in the limited network resource without traffic congestion.
+In this paper, our QoS integrates with a flow classification engine
+and offers the three ways of bandwidth management:
+\begin{itemize}
+\item For a specific host..
+\item For a specific host.
+\item For a specific application from a host or a domain.
+\end{itemize}
+
+
+\subsection{Application Identification}
+Application identification is to identify each flow
+as an application name to enable QoS management system to do bandwidth control or distribution at application level.
+A flow is defined by 5-tuple (source IP, source port, destination IP, destination port, and transport layer protocol).
+Applications include desktop applications, native mobile applications, and web applications,
+such as Facebook, Skype, YouTube, Instagram, Line and WeChat.
+We use supervised machine learning and a method based on inspecting domain name service (DNS) responses to do flow classification.
+After application identification system classifies a flow as an application name,
+it sends the classification result to a server with database.
+The server stores the classification result into database, and waits for query with 5-tuple from QoS management system.
+The detail will be described in section \ref{sec:app_classification}.
+
+
+
+\section{Network function with multiple table management model}\label{sec:nf_mft}
+\subsection{Multiple Flow Tables Strategy}
+In subsection \ref{ssec:nfv_overview}, the vCPE service design architecture have been introduced. The network functions are handled by the cooperation between SDN controller on cloud and SDN switch at the local network gateway. The controller transform the network functions to series of OpenFlow rules requests and send to SDN switch. Following the orders from controller, the SDN switch inserts rules to its flow tables, checks incoming packets against the flow entry match fields, and execute the actions in matching rules. The flow table defines all matching and corresponding processing, thus playing an important role to executive network function.
+
+Since the flow table is crucial component, and we find that single table binds us to implement our network functions. The \cite{onf-multi-tables} also mentioned two condition for single table is too restrictive. The first is a single packet need to perform independent actions based on matching different fields. The second is that the packet needs two-stage processing. Involves into both situation, our network functions implemented by multiple flow tables strategy.
+
+In multiple flow tables strategy, the most important question is: which flow table should we insert rules into? We use the network function as a demarcation, that is, SDN applications which are responsible for specific network functions will only insert rules to one specific flow table, so we can focus on the design of the network function itself. In this way, however, the order of flow table become crucial. Should we put this network function at first, or the other? The answer is about the type of match and action in the rules generated by the network function
+
+The network functions of our vCPE services including Forwarding, Firewall, NAT, DHCP and QoS. We have determined the order of each function, shown in \ref{fig:table-seq}.  In the following subsections, we will introduce how to implement these network functions, which type of rules will be inserted to SDN switch, and how these rules affect our decision of the order of flow tables.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/vnf_orche_view}
-\caption{Virtual CPE Dashboard User Interface for Container Management}
-\label{fig:vcpe_dashboard}
-\end{figure}
-
-\section{vCPE Services}\label{ssec:vcpe_services}
-\subsection{Multiple Flow Flow Tables Strategy}
-In subection \ref{ssec:service_design}, the vCPE service design architecture have been introduced. The network functions are handled by the cooperation between SDN controller on cloud and SDN switch at the local network gateway. The controller transform the network functions to series of OpenFlow rules and send rules requests to SDN switch. Following the command from controller, the SDN switch insert rules to flow tables, checks incoming packets against the flow entry match fields, excute the actions in matching rules. The flow tabe defines all matching and processing, playing an important role to executive network function. Since the restricttion of single table have been discussed in \cite{onf-multi-tables}, we use multiple flow tables strategy to implement our vCPE service.
-
-
-In multiple flow tables strategy, the most important question is: which flow table should we insert rules into? We use the network function as a demarcation, that is, SDN applications which are responsible for specific network functions will only insert rules to one specific flow table. So we can focus on the design of the network function itself. In this way, howerver, the order of flow table become crucial. Should we put flow table of this network function at first, or the other? The answer is about the type of match and action in the rules generated by the network function.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=3in]{./figures/multi-table-sequence}
+\includegraphics[width=3in]{./figures/multi_table}
 \caption{The flow table order of our vCPE service}
 \label{fig:table-seq}
 \end{figure}
 
-The network functions of our vCPE services including Forwarding, Firewall, NAT, DHCP and QoS. We have determined the order of each function, shown in \ref{fig:table-seq}.  In the following subsections, we will introduce how to implement these network functions, which type of rules will be inserted to SDN switch, and how these rules affect our decistion of the order of flow tables.
+\subsection{Service Control}
+Service control is used to enable or disable service. To enable a service, we need to modify the table-miss rule. We always put a packet-in rule in the table of the last active service as a table-miss in case that there isn't any corresponding rule. To make our service chain possible, the rules of each service except the last service contains an additional action, go to next table, so the packets can continue to pass through all active services.
 
-\subsection{Forwarding}
+To disable a service, we not only need to modify the table-miss rule but also have to add an enforce rule. Each enforce rules has maximum priority and the action is goto next table. It means that packets will still pass through the disabled service's table, and the only thing they do in this table is ignoring other rules and go to next table.
+
 \subsection{Firewall}
-\subsection{NAT}
+
+Firewall service is able to block traffic dynamically, and in this service, the packets will not cause any packet-in event.
+On the dashboard, we can specify the blocking policies. There are 4 kinds of policies:
+\begin{itemize}
+\item Block any traffic from a certain source IP.
+\item Block all traffic to a certain destination IP.
+\item Block traffic based on known layer 4 protocols, such as SSH, HTTP, etc.
+\item Block traffic to any layer 4 ports of a host.
+\end{itemize}
+
+For different policies, the controller applies corresponding rules to the SDN switch. After the policies are set, the blocking rules will be installed immediately. Then any traffic that hit the blocking rules will be dropped. For normal traffic, they will not be affected.
+
+As shown in Table  , all the actions of flow entries are drop. The 1st rule illustrates that SSH connection with source IP address 192.168.2.1 would be blocked. The 2nd rule shows the flow entry would block the Telnet protocol.
+
+In our multiple table model, the firewall service is located in the table 1, since once packets are caught by the blocking rules, they doesn't need to apply any other services. The packets which match the rules will be dropped immediately, and their journey in the flow table ends here. To other no-blocked packets, they pass all blocking rules and finally match the table-miss rule, which will let the packets go on the next table. The action of firewall is different from other services, since in other services, no matter what actions are taken to the packets, the packets have to go to the next table
+
+\begin{table*}[]
+\centering
+\caption{Firewall table entry}
+\label{table:firewall}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+IP proto         & IP Src     & IP Dst & L4 sport & L4 dport & Action                                                                              \\ \hline
+TCP        192.168.2.1        & * & *         & 22     & 2000     & \begin{tabular}[c]{@{}l@{}}IP Dst $\,\to\,$ 192.168.8.40; \\ L4 dport $\,\to\,$ 5566\end{tabular} \\ \hline
+140.114.71.178 & 10.10.10.1 & TCP         & 8976     & 2001     & \begin{tabular}[c]{@{}l@{}}IP Src $\,\to\,$ 192.168.8.80; \\ L4 sport $\,\to\,$ 6979\end{tabular}   \\ \hline
+\end{tabular}
+\end{table*}
+
+
 \subsection{DHCP}
+\subsection{NAT}
 \subsection{QoS}
+\subsection{Forwarding}
+
+
+
+\section{Application Identifier method} \label{sec:app_classification}
+
+
+
+
+
 
 \newpage
 
