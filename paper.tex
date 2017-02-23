@@ -684,12 +684,12 @@ In multiple flow tables strategy, the most important question is: which flow tab
 
 The network functions of our vCPE services including Forwarding, Firewall, NAT, DHCP and QoS. We have determined the order of each function, shown in \ref{fig:table-seq}.  In the following subsections, we will introduce how to implement these network functions, which type of rules will be inserted to SDN switch, and how these rules affect our decision of the order of flow tables.
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
 \centering
-\includegraphics[width=3in]{./figures/multiple_table}
+\includegraphics[width=6in]{./figures/multiple_table}
 \caption{The flow table order of our vCPE service}
 \label{fig:table-seq}
-\end{figure}
+\end{figure*}
 
 
 \subsection{Service Control}
@@ -790,7 +790,7 @@ The Set-Field action would modify the Source IP to public IP address of NAT is 1
 when the server sends back to the client (ingoing), the packet header field would be modified.
 The destination IP address and destination port number would be modified to 192.168.8.254 and 7788.
 
-\begin{table*}[]
+\begin{table*}[!t]
 \centering
 \caption{Flow entry for modifying the packet header fields of packets}
 \label{table:nat}
@@ -810,8 +810,90 @@ We have to consider the outgoing and ingoing situations.
 As a result of all the above factors combined,
 the NAT service is located at the first and the last table in our multiple table framework.
 
-
 \subsection{QoS}
+QoS service is mainly for traffic control and we provide three management funtion for QoS service. We will introduce these three strategy first and then discuss the table order of QoS service in multiple table model.
+
+\subsubsection{Rate limitation of hosts}
+When some hosts take up a lot of bandwidth of network, it will make other hosts in slow speed or make traffic congestion. To prevent this, rate limiting is used to control the rate of traffic from a host. For implementing the host rate limitation, we create a meter for desired bandwidth first and then add a flow, of which match is host’s mac address and action is the meter we just created.
+
+The concept of this option is shown in Fig. \ref{fig:rate_host} and Table \ref{table:rate_host}. In T0, host 1 and host 2 are not limited yet. Since host 2 takes up a lot of bandwidth from network in T0~T1, the network administrator sets host 2 rate-limited under 400 Kbps. When controller receive this request, marked as (a), it will create a new meter  with meter id = 1 and bandwidth = 400 Kbps, and set the rule in the flow table with destination MAC address = HOST1 MAC and meter = 1. According to our flow table, it will limit the rate of the target host. Then the traffic from Host 2 will reduce and be limited with 400Kbps immediately. The similar situation also occurs to Host 1 in T2. The administrator chooses to set Host1 under 600 Kbps, marked as (b), and then traffic from Host 1 will be limited with 600Kbps.
+
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/rate_host}
+\caption{Illustration of rate-limiting for a certain host}
+\label{fig:rate_host}
+\end{figure}
+
+% Table 1
+\begin{table*}[]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+Request  & Match                                             & Action                             \\ \hline
+(a)      & Destination MAC Address = MAC address of Host 1   & Goto Meter 1 (400Kbps), Next Table \\ \hline
+(b)      & Destination MAC Address = MAC address of Host 2   & Goto Meter 2 (600Kbps), Next Table \\ \hline
+\end{tabular}
+\caption{Flow entry for modifying the packet header fields of packets}
+\label{table:rate_host}
+\end{table*}
+
+
+
+\subsubsection{Rate limitation of applications}
+There are more and more network’s applications used such as online games, video streaming, conference call, etc. Therefore, there are massive traffic working in the network. Consequently, we integrate with a flow classification engine to identify the flow belongs which application is.
+However, an application may have many connections, we will equally distribute the bandwidth to each connection.
+
+For instance, if there is an application and we can find out which flows belong to this application through the flow classification engine. If we want to limit this application to 1000Kbps. As Figure. \ref{fig:rate_app} and Table \ref{table:rate_app}, in T0, we know there are 3 connections belong this application and we will set the bandwidth of meter to each link with 1000/3 = 333Kbps. In T2, there are more two connections added to this application and we will reset the bandwidth of meter to each links with 1000/5 = 200Kbps. In T2, there is a connection ended by this application, we will reset the bandwidth of meter to each links with 1000/4 = 250Kbps, therefore.
+Whereas, the sum of bandwidth from this application is always being 1000Kbps. That is, the bandwidth will dynamically adjust basic on the algorithm 1 if we want to set the bandwidth of application to B Kbps and there are N connections from the application. The algorithm is shown as Algorithm 1.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/rate_app_algo}
+% \caption{Illustration of rate-limiting for a certain host}
+\label{fig:rate_app_algo}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/rate_app}
+\caption{Illustration of rate-limiting for a certain host}
+\label{fig:rate_app}
+\end{figure}
+
+% Table 2
+\begin{table*}[]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Condition                                      & Meter Bandwidth                \\ \hline
+At T0, there are three connection initially.   & 1000 / 3 = 333 Kbps.           \\ \hline
+At T1, Two new connection (D, E) come up.      & 1000 / 5 = 200 Kbps.           \\ \hline
+At T2, A connection (E) is closed.             & 1000 / 4 = 250 Kbps.           \\ \hline
+\end{tabular}
+\caption{Meter bandwidth changing based on the number of application connections}
+\label{table:rate_app}
+\end{table*}
+
+\subsubsection{Rate limitation for a certain application of certain host}
+
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/rate_host_app}
+\caption{Illustration of rate-limiting for a certain application of certain host}
+\label{fig:rate_app}
+\end{figure}
+
+
+\subsubsection{The table order of QoS service}
+QoS service is located at table 2, because the location of NAT/DHCP, firewall are determined. Here we only need to decide the arrangement of QoS and forwarding.
+Let's consider the scenario that we put the QoS table after the forwarding table. Plus, we have only two services enabled, forwarding and QoS, then suppose a host is not limited by QoS policies. The very first packet will not be affected in both arrangement. For the following packets, the difference can be observed. The packets which has matched the rules of the forwarding table will still cause packet-ins when they go to QoS table. This is not supposed to happen, since the host is not restrained by QoS policies and any packet-in increase the controller's load.
+To reduce the burden of the controller, we put QoS table ahead of forwarding table. In this scenario, all packets that pass through QoS table will continue to go to forwarding table without matching any QoS rules. Then the packets except the very first packet will just be forwarded by forwarding service instead of causing packet-ins. Hence the controller's load will decrease. To use our system, the forwarding service is necessary, so there is no such scenario that users enable QoS and disable forwarding.
+
+
+
 \subsection{Forwarding}
 In this service, when the first packet in a new connection incoming, it will cause a packet-in event because there is no corresponding rule. When controller receives the packet, it will record IP-layer information, including source IP, destination IP, input port number, source mac address and destination mac address. With the recorded information, the controller is able to install a 5-tuple forwarding rule for this connection and following packets don’t need to packet-in again. The 5-tuple is source IP, destination IP, network layer protocol, source layer 4 port, and destination layer 4 port.
 
@@ -903,10 +985,6 @@ We do name mapping on training dataset before we use training data set to build 
 
 \subsubsection{Accuracy matrices}
 To evaluate accuracy, we used precision, recall and F-measure (also called F1 score), as shown in Eq. (1), Eq. (2), and Eq. (3) []. In each round in 10-fold cross validation, we calculate precision and recall of each category to calculate F1 score of each category. After ten rounds, we calculate average
-
-%%
-
-
 
 
 \newpage
