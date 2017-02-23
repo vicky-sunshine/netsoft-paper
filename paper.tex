@@ -733,9 +733,29 @@ TCP      & *           & *            & *        & 23       & Drop   \\ \hline
 \end{threeparttable}
 \end{table*}
 
-
 \subsection{DHCP}
+DHCP service implements DHCP protocol to dynamically assign IP addresses to hosts.
+DHCP operation uses UDP protocol. The clients use port 68 as the source port and 67 as the destination port.
+On the contrary, the server use port 67 as the source port and 68 as the destination port.
+Our system is able to handle these packets  to realize DHCP service.
 
+The service follows these steps:
+\begin{enumerate}
+\item The controller adds a DHCP rule for DHCP packets when the service is enabled.
+\item All packets match this DHCP rule cause packet-in.
+\item The controller checks if a packet is a DHCP discovery packet.
+  \begin{enumerate}
+    \item If so, the controller assigns an IP address, and generate a DHCP offer then do packet-out.
+    \item If not, the controller then checks whether it's a DHCP request. If the result is positive, the controller generate a DHCP acknowledge then do packet-out.
+  \end{enumerate}
+\end{enumerate}
+
+Our system support multitable, but a specific table for DHCP service is not required.
+The reason is that only one rule will be installed for all hosts who request for DHCP service.
+When the service is disabled, the DHCP rule will be deleted,
+and the packets will continue to pass through our service chain.
+Following DHCP packets can reach other DHCP servers without entering our service chain
+since our controller will automatically flood out broadcast packets.
 
 
 \subsection{NAT}
