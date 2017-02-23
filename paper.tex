@@ -63,7 +63,7 @@
 \usepackage{subfigure}
 
 % \setlength{\columnsep}{10mm}
-% \setlength{\textwidth}{180mm}
+% \setlength{\textwidth}4.0180mm}
 % \setlength{\textheight}{250mm}
 % \addtolength{\oddsidemargin}{-9mm}
 % \addtolength{\topmargin}{-25mm}
@@ -313,7 +313,7 @@
 % http://www.ctan.org/pkg/url
 % Basically, \url{my_url_here}.
 
-% *** Do not adjust lengths that control margins, column widths, etc. ***
+% *** Do not adjust lengths that control margins, column widths4.0 etc. ***
 % *** Do not use packages that alter fonts (such as pslatex).         ***
 % There should be no need to do such things with IEEEtran.cls V1.6 and later.
 % (Unless specifically asked to do so by the journal or conference you plan
@@ -454,7 +454,7 @@
 %
 %\begin{figure}[!t]
 %\centering
-%\includegraphics[width=2.5in]{myfigure}
+%\includegraphics[width=4.0.5in]{myfigure}
 % where an .eps filename suffix will be assumed under latex,
 % and a .pdf suffix will be assumed for pdflatex; or what has been declared
 % via \DeclareGraphicsExtensions.
@@ -471,15 +471,15 @@
 % The subfigure \label commands are set within each subfloat command,
 % and the \label for the overall figure must come after \caption.
 % \hfil is used as a separator to get equal spacing.
-% Watch out that the combined width of all the subfigures on a
-% line do not exceed the text width or a line break will occur.
+% Watch out that the combined width 4.0f all the subfigures on a
+% line do not exceed the text width 4.0r a line break will occur.
 %
 %\begin{figure*}[!t]
 %\centering
-%\subfloat[Case I]{\includegraphics[width=2.5in]{box}%
+%\subfloat[Case I]{\includegraphics[width=4.0.5in]{box}%
 %\label{fig_first_case}}
 %\hfil
-%\subfloat[Case II]{\includegraphics[width=2.5in]{box}%
+%\subfloat[Case II]{\includegraphics[width=4.0.5in]{box}%
 %\label{fig_second_case}}
 %\caption{Simulation results for the network.}
 %\label{fig_sim}
@@ -550,7 +550,7 @@ Using the advantages of this architecture, we can assign stateless or light-weig
 \begin{figure}[!t]
 \centering
 \caption{Overview of network function}
-\includegraphics[width=3in]{./figures/nfv_overview}
+\includegraphics[width=4.0in]{./figures/nfv_overview}
 \label{fig:nfv_overview}
 \end{figure}
 
@@ -559,7 +559,7 @@ Using the advantages of this architecture, we can assign stateless or light-weig
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/deployment}
+\includegraphics[width=4.0in]{./figures/deployment}
 \caption{Service Deployment Model}
 \label{fig:vcpe_deploy}
 \end{figure}
@@ -573,7 +573,7 @@ Figure \ref{fig:vcpe_deploy} illustrates the service deployment model. Each gree
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/vcpe_framework_overview}
+\includegraphics[width=4.0in]{./figures/vcpe_framework_overview}
 \caption{Overview of vCPE framework}
 \label{fig:vcpe_framework}
 \end{figure}
@@ -646,13 +646,12 @@ and we use the Mac address learning concept to implement our forwarding function
 \subsubsection{QoS}
 Quality of Service (QoS) are always used to control the traffic flows of a network
 and prevent the traffic to exceed the network capacity and cause traffic congestion.
-Therefore we implement the bandwidth management using meter
-which is defined within OpenFlow protocol 1.3 to set the limitation of the bandwidth.
-Beside achieving network functions virtualization with SDN technology,
+Therefore we implement the bandwidth 4.0anagement using meter
+which is defined within OpenFlow protocol 1.3 to set the limitation of the bandwidth.4.0Beside achieving network functions virtualization with SDN technology,
 we also make the network administrator manage and monitor a network more easily.
 As a result, we can offer the user the best network quality in the limited network resource without traffic congestion.
 In this paper, our QoS integrates with a flow classification engine
-and offers the three ways of bandwidth management:
+and offers the three ways of bandwidth 4.0anagement:
 \begin{itemize}
 \item For a specific host..
 \item For a specific host.
@@ -662,7 +661,7 @@ and offers the three ways of bandwidth management:
 
 \subsection{Application Identification}
 Application identification is to identify each flow
-as an application name to enable QoS management system to do bandwidth control or distribution at application level.
+as an application name to enable QoS management system to do bandwidth 4.0ontrol or distribution at application level.
 A flow is defined by 5-tuple (source IP, source port, destination IP, destination port, and transport layer protocol).
 Applications include desktop applications, native mobile applications, and web applications,
 such as Facebook, Skype, YouTube, Instagram, Line and WeChat.
@@ -686,7 +685,7 @@ The network functions of our vCPE services including Forwarding, Firewall, NAT, 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/multiple_table}
+\includegraphics[width=4.0in]{./figures/multiple_table}
 \caption{The flow table order of our vCPE service}
 \label{fig:table-seq}
 \end{figure}
@@ -761,7 +760,7 @@ since our controller will automatically flood out broadcast packets.
 \subsection{NAT}
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/nat_illustrate}
+\includegraphics[width=4.0in]{./figures/nat_illustrate}
 \caption{Illustration of NAT service}
 \label{fig:nat_illustration}
 \end{figure}
@@ -815,12 +814,12 @@ the NAT service is located at the first and the last table in our multiple table
 \subsection{Forwarding}
 In this service, when the first packet in a new connection incoming, it will cause a packet-in event because there is no corresponding rule. When controller receives the packet, it will record IP-layer information, including source IP, destination IP, input port number, source mac address and destination mac address. With the recorded information, the controller is able to install a 5-tuple forwarding rule for this connection and following packets don’t need to packet-in again. The 5-tuple is source IP, destination IP, network layer protocol, source layer 4 port, and destination layer 4 port.
 
-In order to gather per-session statistics information, 5-tuple rules are needed. This is why we don’t add rules  based on mac address.  The controller installs a pair of dummy rules for every connection, and then request the switch to get current flow statistics every second. In this way, we can get the real-time bandwidth statistics of each connection by just subtracting the byte count from byte count of last second.
+In order to gather per-session statistics information, 5-tuple rules are needed. This is why we don’t add rules  based on mac address.  The controller installs a pair of dummy rules for every connection, and then request the switch to get current flow statistics every second. In this way, we can get the real-time bandwidth 4.0tatistics of each connection by just subtracting the byte count from byte count of last second.
 
 
 
 \section{Application Identifier method} \label{sec:app_classification}
-In order to let QoS management system be able to control or distribute bandwidth at application level, we designed and implemented an application identification system (also called flow classification system) to judge each flow is established by what application. In other words, the system can classify each flow as an application name in real time, rather than a rough category or a transport layer protocol.
+In order to let QoS management system be able to control or distribute bandwidth 4.0t application level, we designed and implemented an application identification system (also called flow classification system) to judge each flow is established by what application. In other words, the system can classify each flow as an application name in real time, rather than a rough category or a transport layer protocol.
 We use supervised machine learning (ML) and a method based on inspecting domain name service (DNS) responses to do flow classification. Except for DNS responses, the system only analyzes transport layer information of packets without inspecting their payload
 
 
@@ -829,14 +828,14 @@ There are training phase (also called preparation phase) and classifying phase, 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/classification_training}
+\includegraphics[width=4.0in]{./figures/classification_training}
 \caption{Architecture of our application identification system in training phase}
 \label{fig:classifcation_training}
 \end{figure}
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/classification_classifying}
+\includegraphics[width=4.0in]{./figures/classification_classifying}
 \caption{Architecture of our application identification system in classifying phase}
 \label{fig:classifcation_classifying}
 \end{figure}
@@ -863,14 +862,41 @@ In classifying phase, we only use those mappings which have been used by one app
 \section{Performance Evaluation}
 \subsection{Multiple Table Performance}
 
-\subsection{Accuracy of Application Identification }
+\begin{figure}[!t]
+\centering
+\includegraphics[width=4.0in]{./figures/nat_evaluation}
+\caption{Multiple Table Performance Evaluation Scenario}
+\label{fig:nat_evaluation}
+\end{figure}
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=4.0in]{./figures/nat_evaluation_result}
+\caption{Result of Multiple Table Performance Evaluation}
+\label{fig:nat_evaluation_result}
+\end{figure}
+
+The single table framework implementation is easier than multiple table framework, but the multiple table framework is more flexible. To verify the efficacy of multiple table vCPE framework, this experiment use the NAT service to compare the throughput between single table vCPE and multiple table vCPE.
+To begin with, an overview of the experiment environment illustrated in Fig. \ref{fig:nat_evaluation}.  In this experiment, the controller is Ryu SDN controller, and run on the Dell PowerEdge R630 Rack Server. The SDN switch employ Pica8 P-3290 switch. We used the tool that iPerf2.0 could generate the network traffic. The iPerf server would be set a public IP address. And iPerf client connect to the SDN switch that the controller would execute the NAT service on the single and multiple table vCPE framework.
+We use the iPerf  to generate the UDP packets and send to server from client, and set the fixed value to bandwidth 4.0t 100Mbps. These experiments would use diffrent payload sizes to inspect their performances.
+As shown in Fig. \ref{fig:nat_evaluation_result}, the throughput value show that the performances of large packets such as 1024 bytes and 1470 bytes is better than small packets. Because the NAT service need to set the packet header field and small payload size would send more packets to server at the same time, the performance of larger packets is well. We can see that the throughput value of multiple table framework is close to single table framework. So we can realize the multiple table framework is more flexible than single table framework, and the performance is close to each other.
+
+
+
+\subsection{Accuracy of Application Identification }
 \subsubsection{Testing data set}
 Testing data set are mappings of flow attributes and ground truth (also called rules). This testing data set were generated by our system in our lab in National Tsing Hua University in Taiwan in 2016. We manually operated applications to generate traffic. After the system generated rules, it exported them into a file, because we wanted to do 10-fold cross validation on the testing data set. There are 14659 rules in total, and there are 137 applications if we view each platform version of an application as one application.
 (提fig 1)
 
 \subsubsection{Validation method}
 Although the system can do online training and classifying, we do offline training and classifying. More specifically, when we did online training to analyze traffic, get ground truth, and export the rules into a file. We do 10-fold cross validation on the rules. There are 10 rounds in 10-fold cross validation. Each round, we split testing data set into training dataset and classifying dataset.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=4.0in]{./figures/classification_classifying}
+\caption{Architecture of our application identification system in classifying phase}
+\label{fig:classifcation_evaluation}
+\end{figure}
 
 \subsubsection{Mapping of category names}
 We do name mapping on training dataset before we use training data set to build classification model, and do name mapping on classifying data set before we use classifying data set to calculate accuracy. The main reason is that some application have different ground truth in different operating system.
