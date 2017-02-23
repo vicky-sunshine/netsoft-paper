@@ -685,10 +685,10 @@ In multiple flow tables strategy, the most important question is: which flow tab
 The network functions of our vCPE services including Forwarding, Firewall, NAT, DHCP and QoS. We have determined the order of each function, shown in \ref{fig:table-seq}.  In the following subsections, we will introduce how to implement these network functions, which type of rules will be inserted to SDN switch, and how these rules affect our decision of the order of flow tables.
 
 \begin{figure*}[!t]
+\label{fig:table-seq}
 \centering
 \includegraphics[width=6in]{./figures/multiple_table}
 \caption{The flow table order of our vCPE service}
-\label{fig:table-seq}
 \end{figure*}
 
 
@@ -716,7 +716,6 @@ In our multiple table model, the firewall service is located in the table 1, sin
 
 \begin{table*}[]
 \centering
-\caption{Firewall rules in Flow Entry}
 \begin{threeparttable}
 \label{table:fw}
 \begin{tabular}{|l|l|l|l|l|l|}
@@ -731,6 +730,7 @@ TCP      & *           & *            & *        & 23       & Drop   \\ \hline
   \item Symbol * represents wildcard (match any value).
 \end{tablenotes}
 \end{threeparttable}
+\caption{Firewall rules in Flow Entry}
 \end{table*}
 
 \subsection{DHCP}
@@ -760,10 +760,10 @@ since our controller will automatically flood out broadcast packets.
 
 \subsection{NAT}
 \begin{figure}[!t]
-\centering
-\includegraphics[width=3in]{./figures/nat_illustrate}
-\caption{Illustration of NAT service}
 \label{fig:nat_illustration}
+\centering
+\includegraphics[width=3in]{./figures/nat_illustration}
+\caption{Illustration of NAT service}
 \end{figure}
 The NAT service could allow a lot of hosts to use one public IP address to connect the network.
 In order to achieve this thing, SDN controller have to set the packet header filed.
@@ -792,7 +792,6 @@ The destination IP address and destination port number would be modified to 192.
 
 \begin{table*}[!t]
 \centering
-\caption{Flow entry for modifying the packet header fields of packets}
 \label{table:nat}
 \begin{tabular}{|l|l|l|l|l|l|}
 \hline
@@ -800,6 +799,7 @@ The destination IP address and destination port number would be modified to 192.
 1. outgoing &192.168.8.254   &140.114.71.177   & 7878         & 9898        & \begin{tabular}[c]{@{}l@{}}IP Src $\,\to\,$ 140.114.71.178; \\ L4 src port $\,\to\,$ 2000\end{tabular} \\ \hline
 2. ingoing  &140.114.71.177  &140.114.71.178   & 9898         & 2000        & \begin{tabular}[c]{@{}l@{}}IP Dst $\,\to\,$ 192.168.8.254; \\ L4 dst port $\,\to\,$ 7878\end{tabular} \\ \hline
 \end{tabular}
+\caption{Flow entry for modifying the packet header fields of packets}
 \end{table*}
 
 In the single table framework, we have to add the two rules to SDN switch to match the outgoing and ingoing situation.
@@ -878,13 +878,33 @@ At T2, A connection (E) is closed.             & 1000 / 4 = 250 Kbps.           
 
 \subsubsection{Rate limitation for a certain application of certain host}
 
+By way of flow classification, we can know the 5 tuple (IP protocol, source IP, destination IP, source port, destination port) from each connection between an application and a host. Consequently, the network administrator can use those 5-tuple and dynamically adjust the bandwidth of meter, according the algorithm mentioned in above, to limit the bandwidth of each application from a host.
+As shown in figure. \ref{fig:rate_host_app}. and Table. \ref{table:rate_host_app}. In T0, we want to limit the application B to the Host with 600 Kbps and we will add the rules matching each 5 tuples from application A and set Meter 1 to those rule. In the meantime, the bandwidth of Meter 1 is set to 600/N Kbps if there are N connections built from application B of the host.
+In T1, marked as (a), If we want to limit the application A to the Host with 300 Kbps, we will add the rules matching each 5 tuples from application A and set Meter 2 to those rule.
+Then in T2, marked as (b), application B has already been limited since T0 and we want to change the bandwidth of application B from 600Kbps to 1000 Kbps.
+However, We would not change the rule in flow table, we only change the bandwidth of the correspond meter in the meter table. That is, the bandwidth of Meter 1 will be set from 600/N to 1000/N. Therefore, there only have a little overhead between switch and controller. That is, if there are Ni connections in time Ti, then the bandwidth will be set as shown as following.
+Similarly, we can use the same way to limit the whole network while not only to the specific host.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=3in]{./figures/rate_host_app}
 \caption{Illustration of rate-limiting for a certain application of certain host}
-\label{fig:rate_app}
+\label{fig:rate_host_app}
 \end{figure}
+
+% Table 3
+\begin{table*}[]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+Request  & Match                                                   & Action                                \\ \hline
+Initial  & 5 tuples from an application B connection of the Host   & Goto Meter 1 (600 Kbps), Next Table   \\ \hline
+(a)      & 5 tuples from an application A connection of the Host   & Goto Meter 1 (300 Kbps), Next Table   \\ \hline
+(b)      & 5 tuples from an application B connection of the Host   & Goto Meter 2 (1000 Kbps), Next Table  \\ \hline
+\end{tabular}
+\caption{Flow entry of rate-limiting for a certain application of certain host}
+\label{table:rate_host_app}
+\end{table*}
 
 
 \subsubsection{The table order of QoS service}
@@ -986,6 +1006,59 @@ We do name mapping on training dataset before we use training data set to build 
 \subsubsection{Accuracy matrices}
 To evaluate accuracy, we used precision, recall and F-measure (also called F1 score), as shown in Eq. (1), Eq. (2), and Eq. (3) []. In each round in 10-fold cross validation, we calculate precision and recall of each category to calculate F1 score of each category. After ten rounds, we calculate average
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/qos_evaluation}
+\label{fig:qos_evaluation}
+\end{figure}
+
+\section{Limit host bandwidth}
+We choose a way to verify our function is downloading the file in that it is a situation always takes up the network recourse in real world. We decide to download the image of Ubuntu 14.04 which is about 1GB size.
+As Figure \ref{fig:qos_evaluation}(a),We used a desktop computer to be the experimental host and record the bandwidth in every 2 seconds. In the beginning, we start downloading the file without limiting and the rate is between 190000 Kbps to 410000 Kbps. At 10th seconds, we wanted to limit this host’s bandwidth to 1024Kbps and we added the rule the destination MAC address is matching this desktop computer with a meter of 1024Kbps. Then we can find out the bandwidth from this host is decrease and be limited to about 1024Kbps immediately.
+At 36th seconds, we cancel the limit to this host. That is, removing the meter field from the rule in the flow table. Obviously, we also observed the bandwidth of download from this host is rising rapidly and without limiting.
+
+
+\section{Limit application bandwidth}
+There are a lot of people using the streaming applications nowadays and those applications always take up an amount of network’s source. We integrated with application identification to classify each flow belongs what the application is, consequently.
+As Figure \ref{fig:qos_evaluation}(b),Then we choose YouTube to verify our limitation function of applications. In the beginning without limitation, the bandwidth is between 190000 Kbps and 360000 Kbps. At 10th seconds, we limited the Youtube to 8192 Kbps by adding the rule of 5 tuples to flow table. Therefore, we can find out the traffic of Youtube from this host is reducing immediately and the total traffic will not exceed the limited bandwidth since then.
+The relationship between total traffic from Youtube and bandwidth of meter to each connection with time diagram is show as following Table \ref{fig:qos_final_table}. The bandwidth of meter will change dynamically according the number of connection at that time.
+
+% Table QoS
+\begin{table}[]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+Time     & \begin{tabular}[c]{@{}l@{}} Bandwidth of the meter to each\\connection from Youtube (Kbps)\end{tabular}    & \begin{tabular}[c]{@{}l@{}}Total Bandwidth from\\Youtube (Kbps)\end{tabular}           \\ \hline
+0        & Unlimited                                                                                                  & 358896   \\ \hline
+4        & Unlimited                                                                                                  & 292512   \\ \hline
+8        & Unlimited                                                                                                  & 290464   \\ \hline
+12       & 8192                                                                                                       & 1544   \\ \hline
+16       & 4096                                                                                                       & 1544   \\ \hline
+20       & 4096                                                                                                       & 24   \\ \hline
+24       & 8192                                                                                                       & 4584   \\ \hline
+28       & 8192                                                                                                       & 4552   \\ \hline
+32       & 2730                                                                                                       & 24   \\ \hline
+36       & 4096                                                                                                       & 584   \\ \hline
+40       & 4096                                                                                                       & 576   \\ \hline
+44       & 8192                                                                                                       & 2096   \\ \hline
+48       & 4096                                                                                                       & 576   \\ \hline
+52       & 4096                                                                                                       & 584   \\ \hline
+56       & 2730                                                                                                       & 536   \\ \hline
+60       & 4096                                                                                                       & 2616   \\ \hline
+\end{tabular}
+\caption{Limit the throughput of Skype to all hosts from a network domain.}
+\label{fig:qos_final_table}
+\end{table}
+
+As we known from the above, when we want to limit the application from a host, we used the 5 tuple from application to a host. Now we can use the similar concept to extend this limitation from a whole network domain instead of a host. That is, we didn’t just limit the application from a host, we were limiting the 5 tuples of each hosts from this network domain.
+The bandwidth dynamically adjust is also basic on the algorithm 1. But the number of connections of the application should include the whole hosts from this network domain instead of a host.
+As the figure \ref{fig:qos_final}, there are 3 hosts in the same network domain and we choose Skype to do the experiment. In the beginning without limitation, the bandwidths are almost 900000 Kbps to 1200000 Kbps in whole network. At 10th seconds, we limited the Skype to 16384 Kbps by adding the rule of 5 tuples from all hosts to flow table. Therefore, we can find out the traffic of Skype from this network domain is reducing immediately and the total traffic will not exceed the limited bandwidth since then.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/qos_final}
+\label{fig:qos_final}
+\end{figure}
 
 \newpage
 
