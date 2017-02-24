@@ -241,9 +241,11 @@ There are training phase (also called preparation phase) and classifying phase, 
 \subsection{Overall procedure of application identification}
 In training phase, we generate some data needed by ML and the method based on inspecting DNS responses. In classifying phase, if a flow meet some requirement, we use the method based on inspecting DNS response to classify; otherwise, we use ML to classify.
 
+
+
 \subsection{Procedure of Supervised ML in our system}
 In training phase, the architecture is show in Fig \ref{fig:class_training}. Flow classification engine is to build classification model by training data from Trainer, and update the model when new training data comes. Trainer is to analyze traffic from mirror port to get flow attributes. After Trainer finishes calculating flow attributes of a flow, it gets ground truth of the flow from Scanner or App Meta Server to generate training data, and sends training data to flow classification engine. App Meta Server is to store mappings of 5-tuple and ground truth from Scanner, and accept queries from Trainer. Scanner is to get mappings of 5-tuple and ground truth from OS.
-In classifying phase, the architecture is shown in Fig \ref{class_classifying}. Flow classification engine is to use flow attributes from Classifier and classification model to get a classification result, and sends classification result to Classifier. Classifier is to analyze traffic from mirror port to get flow attributes. After Classifier finishes calculating flow attributes of a flow, it use flow attributes to ask flow classification engine for classification result if needed.
+In classifying phase, the architecture is shown in Fig \ref{fig:class_classifying}. Flow classification engine is to use flow attributes from Classifier and classification model to get a classification result, and sends classification result to Classifier. Classifier is to analyze traffic from mirror port to get flow attributes. After Classifier finishes calculating flow attributes of a flow, it use flow attributes to ask flow classification engine for classification result if needed.
 
 
 
