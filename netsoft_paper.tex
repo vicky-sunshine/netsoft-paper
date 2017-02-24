@@ -234,14 +234,14 @@ Firewall service is able to block traffic dynamically, and in this service, the 
 
 On the dashboard, we can specify the blocking policies. There are 3 kinds of policies:
 \begin{itemize}[\IEEEsetlabelwidth{Z}]
-\item Block any traffic from a certain source IP or destination IP.
+\item Block any traffic from a source IP or destination IP.
 \item Block traffic based on known layer 4 protocols, such as SSH, HTTP, etc.
 \item Block traffic to customize layer 4 ports of a host.
 \end{itemize}
 
 For different policies, the controller applies corresponding rules to the SDN switch. After the policies are set, the blocking rules will be installed immediately. Then any traffic that hit the blocking rules will be dropped. For normal traffic, they will not be affected.
 
-As shown in Table \ref{table:fw}, all the actions of flow entries are drop. The 1[st] rule illustrates that SSH connection with source IP address 192.168.2.1 would be blocked. The 2[nd] rule shows the flow entry would block the Telnet protocol.
+As shown in Table \ref{table:fw}, all the actions of flow entries are drop. The first rule illustrates that SSH connection with source IP address 192.168.2.1 would be blocked. The second rule shows the flow entry would block the Telnet protocol.
 
 In our multiple flow tables model, the firewall service is located in the flow table 1, since once packets are caught by the blocking rules, they doesn't need to apply any other services. The packets which match the rules will be dropped immediately, and their journey in the flow table ends here. To other no-blocked packets, they pass all blocking rules and finally match the table-miss rule, which will let the packets go on the next flow table. The action of firewall is different from other services, since in other services, no matter what actions are taken to the packets, the packets have to go to the next flow table.
 
@@ -269,20 +269,20 @@ TCP      & *           & *            & *        & 23       & Drop   \\ \hline
 The NAT service could allow a lot of hosts to use one public IP address to connect the network.
 In order to achieve this thing, SDN controller have to set the packet header filed.  Because the SDN switch would set the field, the first packet have to go to controller. And controller would add the flow to SDN switch, after that the packet would not go to controller. It can decrease the burdens of the controller.
 
-Below is a examples to show how the NAT service modify the IP address and port number, as shown in Fig. \ref{mft_nat}. For outgoing packet, the SDN switch doesn’t have any flow entry in flow table, so the Packet-in event will be triggered at the beginning. The packet that is sent by private network host will be sent to SDN controller, and the packet header fields are modified by Set-Field action. The source IP address and source port number of outgoing packet will be modified to public IP address and remaped a new port number for NAT. For ingoing packet, the destination IP and destination port number are modified to fit private IP and port number. And then SDN controller add these flow entries to SDN switch, it can’t avoid that all the packet sent to controller.
+Below is a examples to show how the NAT service modify the IP address and port number, as shown in Fig. \ref{fig:mft_nat}. For outgoing packet, the SDN switch doesn’t have any flow entry in flow table, so the Packet-in event will be triggered at the beginning. The packet that is sent by private network host will be sent to SDN controller, and the packet header fields are modified by Set-Field action. The source IP address and source port number of outgoing packet will be modified to public IP address and remaped a new port number for NAT. For ingoing packet, the destination IP and destination port number are modified to fit private IP and port number. And then SDN controller add these flow entries to SDN switch, it can’t avoid that all the packet sent to controller.
 
-Fig. \ref{mft_nat} show the public IP address of NAT is 140.114.71.178 and a host private IP is 192.168.8.254 and port number 7878. The client sent the packet to a server with IP address 140.114.71.177 and port number 9898.
+Fig. \ref{fig:mft_nat} show the public IP address of NAT is 140.114.71.178 and a host private IP is 192.168.8.254 and port number 7878. The client sent the packet to a server with IP address 140.114.71.177 and port number 9898.
 
 As shown in Table \ref{table:nat}, when host sent the packet to server (outgoing), the Packet-in will be trigger, and then packet to controller. The Set-Field action would modify the Source IP to public IP address of NAT is 140.114.71.178 and source port to 2000. when the server sends back to the client (ingoing), the packet header field would be modified. The destination IP address and destination port number would be modified to 192.168.8.254 and 7788.
 
 In the single flow table framework, we have to add the two rules to SDN switch to match the outgoing and ingoing situation. At the first, we predict the NAT service to be put one the last table in the multiple flow tables framework.  Because the NAT service need to set the packet header fields and play a role of connection to the outside network. And the most important thing is that the SDN switch is according to order of table to match. We have to consider the outgoing and ingoing situations. As a result of all the above factors combined, the NAT service is located at the first and the last table in our multiple flow table framework.
 
-\begin{figure*}[!t]
+\begin{figure}[!t]
 \centering
-\includegraphics[width=6in]{./figures/mft_table_overview}
+\includegraphics[width=6in]{./figures/mft_nat}
 \caption{The flow table order of vCPE service.}
 \label{fig:mft_nat}
-\end{figure*}
+\end{figure}
 
 % NAT example table
 \begin{table*}[!t]
@@ -300,8 +300,40 @@ In the single flow table framework, we have to add the two rules to SDN switch t
 
 
 \subsection{DHCP}
+DHCP service implements DHCP protocol to dynamically assign IP addresses to hosts.
+DHCP operation uses UDP protocol. The clients use port 68 as the source port and 67 as the destination port.
+On the contrary, the server use port 67 as the source port and 68 as the destination port.
+Our system is able to handle these packets  to realize DHCP service.
+
+The service follows these steps:
+\begin{enumerate}
+\item The controller adds a DHCP rule for DHCP packets when the service is enabled.
+\item All packets match this DHCP rule cause packet-in.
+\item The controller checks if a packet is a DHCP discovery packet.
+  \begin{enumerate}
+    \item If so, the controller assigns an IP address, and generate a DHCP offer then do packet-out.
+    \item If not, the controller then checks whether it's a DHCP request. If the result is positive, the controller generate a DHCP acknowledge then do packet-out.
+  \end{enumerate}
+\end{enumerate}
+
+Our system support multitable, but a specific table for DHCP service is not required.
+The reason is that only one rule will be installed for all hosts who request for DHCP service.
+When the service is disabled, the DHCP rule will be deleted,
+and the packets will continue to pass through our service chain.
+Following DHCP packets can reach other DHCP servers without entering our service chain
+since our controller will automatically flood out broadcast packets.
+
+
+
 \subsection{QoS}
+
+
+
 \subsection{Forwarding}
+In this service, when the first packet in a new connection incoming, it will cause a packet-in event because there is no corresponding rule. When controller receives the packet, it will record IP-layer information, including source IP, destination IP, input port number, source mac address and destination mac address. With the recorded information, the controller is able to install a 5-tuple forwarding rule for this connection and following packets don’t need to packet-in again. The 5-tuple is source IP, destination IP, network layer protocol, source layer 4 port, and destination layer 4 port.
+
+In order to gather per-session statistics information, 5-tuple rules are needed. This is why we don’t add rules  based on mac address.  The controller installs a pair of dummy rules for every connection, and then request the switch to get current flow statistics every second. In this way, we can get the real-time bandwidth statistics of each connection by just subtracting the byte count from byte count of last second.
+
 
 
 
