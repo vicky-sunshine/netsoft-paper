@@ -135,7 +135,7 @@ Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model.
 
 
 \subsection{Architecture of the vCPE system}
-The architecture as shown in Fig \ref{fig:desc_vcpe_framework} including of a Infrastructure Controller, Infrastructure Orchestrator, Cloud Database, VNF Controllers and VNF Orchestrator.
+The architecture as shown in Fig. \ref{fig:desc_vcpe_framework} including of a Infrastructure Controller, Infrastructure Orchestrator, Cloud Database, VNF Controllers and VNF Orchestrator.
 The Infrastructure Orchestrator, VNF Orchestrator and Cloud Database are web servers
 Each component is introduced in the subsection below.
 
@@ -347,7 +347,7 @@ In order to let QoS management system be able to control or distribute bandwidth
 We use supervised machine learning (ML) and a method based on inspecting domain name service (DNS) responses to do flow classification. Except for DNS responses, the system only analyzes transport layer information of packets without inspecting their payload.
 
 \subsection{Architecture of application identification system}
-There are training phase (also called preparation phase) and classifying phase, their architectures are shown in Fig \ref{fig:class_training} and Fig \ref{fig:class_classifying} respectively. These architectures can be integrated, and do training and classifying in the same time.
+There are training phase (also called preparation phase) and classifying phase, their architectures are shown in Fig. \ref{fig:class_training} and Fig. \ref{fig:class_classifying} respectively. These architectures can be integrated, and do training and classifying in the same time.
 
 \begin{figure}[!t]
 \centering
@@ -371,8 +371,8 @@ In training phase, we generate some data needed by ML and the method based on in
 
 
 \subsection{Procedure of Supervised ML in our system}
-In training phase, the architecture is show in Fig \ref{fig:class_training}. Flow classification engine is to build classification model by training data from Trainer, and update the model when new training data comes. Trainer is to analyze traffic from mirror port to get flow attributes. After Trainer finishes calculating flow attributes of a flow, it gets ground truth of the flow from Scanner or App Meta Server to generate training data, and sends training data to flow classification engine. App Meta Server is to store mappings of 5-tuple and ground truth from Scanner, and accept queries from Trainer. Scanner is to get mappings of 5-tuple and ground truth from OS.
-In classifying phase, the architecture is shown in Fig \ref{fig:class_classifying}. Flow classification engine is to use flow attributes from Classifier and classification model to get a classification result, and sends classification result to Classifier. Classifier is to analyze traffic from mirror port to get flow attributes. After Classifier finishes calculating flow attributes of a flow, it use flow attributes to ask flow classification engine for classification result if needed.
+In training phase, the architecture is show in Fig. \ref{fig:class_training}. Flow classification engine is to build classification model by training data from Trainer, and update the model when new training data comes. Trainer is to analyze traffic from mirror port to get flow attributes. After Trainer finishes calculating flow attributes of a flow, it gets ground truth of the flow from Scanner or App Meta Server to generate training data, and sends training data to flow classification engine. App Meta Server is to store mappings of 5-tuple and ground truth from Scanner, and accept queries from Trainer. Scanner is to get mappings of 5-tuple and ground truth from OS.
+In classifying phase, the architecture is shown in Fig. \ref{fig:class_classifying}. Flow classification engine is to use flow attributes from Classifier and classification model to get a classification result, and sends classification result to Classifier. Classifier is to analyze traffic from mirror port to get flow attributes. After Classifier finishes calculating flow attributes of a flow, it use flow attributes to ask flow classification engine for classification result if needed.
 
 
 
@@ -396,7 +396,72 @@ In classifying phase, we only use those mappings which have been used by one app
 
 
 \section{PERFORMANCE EVALUATION}
+\subsection{Multiple Table Performance}
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/evaluation_nat_scenario}
+\caption{Multiple Table Performance Evaluation Scenario}
+\label{fig:evaluation_nat_scenario}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/evaluation_nat_result}
+\caption{Result of Multiple Table Performance Evaluation}
+\label{fig:evaluation_nat_result}
+\end{figure}
+
+The single flow table framework implementation is easier than multiple flow table framework, but the multiple flow table framework is more flexible. To verify the efficacy of multiple flow table vCPE framework, this experiment use the NAT service to compare the throughput between single flow table vCPE and multiple flow table vCPE.
+;;We use the iPerf  to generate the UDP packets and send to server from client, and set the fixed value to bandwidth at 100Mbps. These experiments would use diffrent payload sizes to inspect their performances.
+As shown in Fig. \ref{fig:evaluation_nat_scenario}, the throughput value show that the performances of large packets such as 1024 bytes and 1470 bytes is better than small packets. Because the NAT service need to set the packet header field and small payload size would send more packets to server at the same time, the performance of larger packets is well. We can see that the throughput value of multiple table framework is close to single table framework. So we can realize the multiple table framework is more flexible than single table framework, and the performance is close to each other, which shown as \ref{fig:evaluation_nat_result}.
+
+
+
+\subsection{Accuracy of Application Identification }
+\subsubsection{Testing data set}
+Testing data set are mappings of flow attributes and ground truth (also called rules). This testing data set were generated by our system in our lab in National Tsing Hua University in Taiwan in 2016. We manually operated applications to generate traffic. After the system generated rules, it exported them into a file, because we wanted to do 10-fold cross validation on the testing data set. There are 14659 rules in total, and there are 137 applications if we view each platform version of an application as one application.
+
+\subsubsection{Validation method}
+Although the system can do online training and classifying, we do offline training and classifying, shown as Fig. \ref{fig:classifcation_evaluation}. More specifically, when we did online training to analyze traffic, get ground truth, and export the rules into a file. We do 10-fold cross validation on the rules. There are 10 rounds in 10-fold cross validation. Each round, we split testing data set into training dataset and classifying dataset.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/classifcation_evaluation}
+\caption{Architecture of application identification system in classifying phase}
+\label{fig:classifcation_evaluation}
+\end{figure}
+
+\subsubsection{Mapping of category names}
+We do name mapping on training dataset before we use training data set to build classification model, and do name mapping on classifying data set before we use classifying data set to calculate accuracy. The main reason is that some application have different ground truth in different operating system.
+
+\subsubsection{Accuracy matrices}
+To evaluate accuracy, we used precision, recall and F-measure (also called F1 score), as shown in Eq. (1), Eq. (2), and Eq. (3) []. In each round in 10-fold cross validation, we calculate precision and recall of each category to calculate F1 score of each category. After ten rounds, we calculate average
+
+\begin{equation}
+\label{eqn_1}
+Precision = \dfrac{True\ positive}{True\ positive\ +\ False\ positive}
+\end{equation}
+
+\begin{equation}
+\label{eqn_2}
+Recall = \dfrac{True\ positive}{True\ positive\ +\ False\ negative}
+\end{equation}
+
+\begin{equation}
+\label{eqn_3}
+F1\ score = \dfrac{2\times Precision\times Recall}{Precsion + Recall}
+\end{equation}
+
+\subsubsection{Accuracy analysis}
+
+
+
+\subsection{QoS Evaluation Limit Host bandwidth}
+
+
+
+\subsection{QoS Evaluation Limit application bandwidth}
 
 
 
