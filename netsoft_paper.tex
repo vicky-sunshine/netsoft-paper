@@ -358,7 +358,7 @@ When network administrator request to rate limit a certain application to a cert
 \begin{figure}[!t]
 \centering
 \includegraphics[width=3in]{./figures/mft_qos_rate_app}
-\caption{Illustration of rate-limiting for a certain host}
+\caption{Illustration of rate-limiting for a certain application.}
 \label{fig:mft_qos_rate_app}
 \end{figure}
 
@@ -470,7 +470,7 @@ Although the system can do online training and classifying, we do offline traini
 \begin{figure}[!t]
 \centering
 \includegraphics[width=3in]{./figures/evaluation_classification}
-\caption{Result of Multiple Table Performance Evaluation}
+\caption{Evaluation of Application Identification.}
 \label{fig:evaluation_classification}
 \end{figure}
 
@@ -530,9 +530,9 @@ Tmall               & 0.799747            & YouTube           & 0.713084        
 
 We choose a way to verify our function is downloading the file in that it is a situation always takes up the network recourse in real world. We decide to download the image of Ubuntu 14.04 which is about 1GB size.
 
-As shown in Fig. \ref{fig:qos_limit_host}, The NFV controller run on the Dell PowerEdge R630 Rack Server, and would excute the QoS service. And the OpenFlow-enable switch use the the Edge-Core AS5712-54X switch that operating system is PicOS TM r2.6.
+As shown in Fig. \ref{fig:class_classifying}, The NFV controller run on the Dell PowerEdge R630 Rack Server, and would excute the QoS service. And the OpenFlow-enable switch use the the Edge-Core AS5712-54X switch that operating system is PicOS TM r2.6.
 
-We used a desktop computer to be the experimental host and record the bandwidth in every 2 seconds. In the beginning, we start downloading the file without limiting and the rate is between 190000 Kbps to 410000 Kbps.
+We used a desktop computer to be the experimental host and record the bandwidth in every 2 seconds. As shown in Fig \ref{fig:qos_limit_host}, we start downloading the file without limiting and the rate is between 190000 Kbps to 410000 Kbps in the beginning.
 At \nth{10} seconds, we wanted to limit this host’s bandwidth to 1024Kbps and we added the rule the destination MAC address is matching this desktop computer with a meter of 1024Kbps. Then we can find out the bandwidth from this host is decrease and be limited to about 1024Kbps immediately.
 
 At \nth{36} seconds, we cancel the limit to this host. That is, removing the meter field from the rule in the flow table. Obviously, we also observed the bandwidth of download from this host is rising rapidly and without limiting.
@@ -554,10 +554,12 @@ At \nth{36} seconds, we cancel the limit to this host. That is, removing the met
 \subsection{QoS Evaluation Limit application bandwidth}
 
 There are a lot of people using the streaming applications nowadays and those applications always take up an amount of network’s source. We integrated with application identification to classify each flow belongs what the application is, consequently.
-In our experiment environment, as shown in Fig.9. We use a mirror switch to replicate the whole traffic form SDN switch and provide the application identification system to classify the flows belong which applications. Application identification system will upload the result of identification to database. Then the controller will get the result from the database and update the flow information of application. Therefore, we can use the flow information (5 tuple and the result of identification) to complete our limitation to application.
+In our experiment environment, as shown in Fig. \ref{fig:class_classifying}. We use a mirror switch to replicate the whole traffic form SDN switch and provide the application identification system to classify the flows belong which applications. Application identification system will upload the result of identification to database. Then the controller will get the result from the database and update the flow information of application. Therefore, we can use the flow information (5 tuple and the result of identification) to complete our limitation to application.
 We choose YouTube to verify our limitation function of applications and there are 3 Hosts (Host 1, Host 2 and Host 3) in the same network domain. Then we will limit the Youtube’s bandwidth of this network domain, that is, the sum of bandwidth from Youtube of Host 1, Host 2 and Host 3.
-As shown in Figure.? In the beginning without limitation, the total bandwidth of this network is about 3000 Kbps to 4000 Kbps. At \nth{8} seconds, we limited the total bandwidth from Youtube to 2048 Kbps in this network domain. Therefore, we can find out the total traffic of Youtube from this network domain is reducing immediately. Clearly, the total traffic from Youtube will not exceed the limited bandwidth (2048Kbps) since we limited the Youtube to this network domain.
+As shown in Figure. \ref{fig:mft_qos_rate_domain_app}, in the beginning without limitation, the total bandwidth of this network is about 3000 Kbps to 4000 Kbps. At \nth{8} seconds, we limited the total bandwidth from Youtube to 2048 Kbps in this network domain. Therefore, we can find out the total traffic of Youtube from this network domain is reducing immediately. Clearly, the total traffic from Youtube will not exceed the limited bandwidth (2048Kbps) since we limited the Youtube to this network domain.
 When using our limitation function of application, we can guarantee the traffic of this network domain will not over the network capacity and prevent the traffic congestion in short.
+
+
 
 \section{Conclusion and future works}
 (Eric)
