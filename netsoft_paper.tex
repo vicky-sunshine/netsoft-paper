@@ -544,10 +544,20 @@ At \nth{36} seconds, we cancel the limit to this host. That is, removing the met
 \label{fig:qos_limit_host}
 \end{figure}
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/mft_qos_rate_domain_app}
+\caption{Limit the Youtube rate to a network domain.}
+\label{fig:mft_qos_rate_domain_app}
+\end{figure}
+
 \subsection{QoS Evaluation Limit application bandwidth}
 
-
-
+There are a lot of people using the streaming applications nowadays and those applications always take up an amount of network’s source. We integrated with application identification to classify each flow belongs what the application is, consequently.
+In our experiment environment, as shown in Fig.9. We use a mirror switch to replicate the whole traffic form SDN switch and provide the application identification system to classify the flows belong which applications. Application identification system will upload the result of identification to database. Then the controller will get the result from the database and update the flow information of application. Therefore, we can use the flow information (5 tuple and the result of identification) to complete our limitation to application.
+We choose YouTube to verify our limitation function of applications and there are 3 Hosts (Host 1, Host 2 and Host 3) in the same network domain. Then we will limit the Youtube’s bandwidth of this network domain, that is, the sum of bandwidth from Youtube of Host 1, Host 2 and Host 3.
+As shown in Figure.? In the beginning without limitation, the total bandwidth of this network is about 3000 Kbps to 4000 Kbps. At \nth{8} seconds, we limited the total bandwidth from Youtube to 2048 Kbps in this network domain. Therefore, we can find out the total traffic of Youtube from this network domain is reducing immediately. Clearly, the total traffic from Youtube will not exceed the limited bandwidth (2048Kbps) since we limited the Youtube to this network domain.
+When using our limitation function of application, we can guarantee the traffic of this network domain will not over the network capacity and prevent the traffic congestion in short.
 
 \section{Conclusion and future works}
 (Eric)
