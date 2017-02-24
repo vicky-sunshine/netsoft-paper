@@ -204,6 +204,14 @@ Application identification is to identify each flow as an application name to en
 
 
 \section{Network Function With Multiple Flow Table Management Model} \label{sec:mft}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=6in]{./figures/mft_table_overview}
+\caption{The flow table order of vCPE service.}
+\label{fig:mft_table_overview}
+\end{figure*}
+
 \subsection{Multiple Flow Tables Strategy}
 In subsection A , the vCPE service design architecture have been introduced. The network functions are handled by the cooperation between SDN controller on cloud and SDN switch at the local network gateway. The controller transform the network functions to series of OpenFlow rules requests and send to SDN switch. Following the orders from controller, the SDN switch inserts rules to its flow tables, checks incoming packets against the flow entry match fields, and execute the actions in matching rules. The flow table defines all matching and corresponding processing, thus playing an important role to executive network function.
 
@@ -213,12 +221,7 @@ In multiple flow tables strategy, the most important question is: which flow tab
 
 The network functions of vCPE services including Firewall, NAT, DHCP, QoS and Forwarding. We have determined the order of each function, shown in \ref{fig:mft_table_overview}. (Notice that the flow tables are counting from zero) In the following subsections, we will introduce how to implement these network functions, which type of rules will be inserted to SDN switch, and how these rules affect our decision of the order of flow tables.
 
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=6in]{./figures/mft_table_overview}
-\caption{The flow table order of vCPE service.}
-\label{fig:mft_table_overview}
-\end{figure*}
+
 
 
 
@@ -279,7 +282,7 @@ In the single flow table framework, we have to add the two rules to SDN switch t
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=6in]{./figures/mft_nat}
+\includegraphics[width=3in]{./figures/mft_nat}
 \caption{The flow table order of vCPE service.}
 \label{fig:mft_nat}
 \end{figure}
