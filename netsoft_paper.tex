@@ -312,11 +312,7 @@ The service follows these steps:
 \begin{enumerate}
 \item The controller adds a DHCP rule for DHCP packets when the service is enabled.
 \item All packets match this DHCP rule cause packet-in.
-\item The controller checks if a packet is a DHCP discovery packet.
-  \begin{enumerate}
-    \item If so, the controller assigns an IP address, and generate a DHCP offer then do packet-out.
-    \item If not, the controller then checks whether it's a DHCP request. If the result is positive, the controller generate a DHCP acknowledge then do packet-out.
-  \end{enumerate}
+\item The controller checks if a packet is a DHCP discovery packet. If so, the controller assigns an IP address, and generate a DHCP offer then do packet-out. If not, the controller then checks whether it's a DHCP request. If the result is positive, the controller generate a DHCP acknowledge then do packet-out.
 \end{enumerate}
 
 Our system support multiple flow table, but a specific flow table for DHCP service is not required.
@@ -329,6 +325,56 @@ since our controller will automatically flood out broadcast packets.
 
 
 \subsection{QoS}
+QoS service is mainly for traffic control and we provide three management funtion for QoS service. We will introduce these three strategy first and then discuss the flow table order of QoS service in multiple table model.
+
+\subsubsection{Rate limitation of hosts}
+When some hosts take up a lot of bandwidth of network, it will make other hosts in slow speed or make traffic congestion. To prevent this, rate limiting is used to control the rate of traffic from a host. For implementing the host rate limitation, we create a meter for desired bandwidth first and then add a flow, of which match is host’s mac address and action is the meter we just created.
+
+The concept of this option is shown in Fig. \ref{fig:mft_qos_rate_host}. In T0, host 1 and host 2 are not limited yet. Since host 2 takes up a lot of bandwidth from network in T0~T1, the network administrator sets host 2 rate-limited under 400 Kbps. When controller receive this request, marked as (a), it will create a new meter  with meter id = 1 and bandwidth = 400 Kbps, and set the rule in the flow table with destination MAC address = HOST1 MAC and meter = 1. According to our flow table, it will limit the rate of the target host. Then the traffic from Host 2 will reduce and be limited with 400Kbps immediately. The similar situation also occurs to Host 1 in T2. The administrator chooses to set Host1 under 600 Kbps, marked as (b), and then traffic from Host 1 will be limited with 600Kbps.
+
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/mft_qos_rate_host}
+\caption{Illustration of rate-limiting for a certain host}
+\label{fig:mft_qos_rate_host}
+\end{figure}
+
+
+\subsubsection{Rate limitation of applications}
+There are more and more network’s applications used such as online games, video streaming, conference call, etc. Therefore, there are massive traffic working in the network. Consequently, we integrate with a flow classification engine to identify the flow belongs which application is.
+However, an application may have many connections, we will equally distribute the bandwidth to each connection.
+
+For instance, if there is an application and we can find out which flows belong to this application through the flow classification engine. If we want to limit this application to 1000Kbps. As Figure. \ref{fig:mft_qos_rate_app}, in T0, we know there are 3 connections belong this application and we will set the bandwidth of meter to each link with 1000/3 = 333Kbps. In T2, there are more two connections added to this application and we will reset the bandwidth of meter to each links with 1000/5 = 200Kbps. In T2, there is a connection ended by this application, we will reset the bandwidth of meter to each links with 1000/4 = 250Kbps, therefore. Whereas, the sum of bandwidth from this application is always being 1000 Kbps. That is, the bandwidth will be dynamically adjusted.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/mft_qos_rate_app}
+\caption{Illustration of rate-limiting for a certain host}
+\label{fig:mft_qos_rate_app}
+\end{figure}
+
+
+\subsubsection{Rate limitation for a certain application of certain host}
+
+By way of flow classification, we can know the 5 tuple (IP protocol, source IP, destination IP, source port, destination port) from each connection between an application and a host. Consequently, the network administrator can use those 5-tuple and dynamically adjust the bandwidth of meter, according the algorithm mentioned in above, to limit the bandwidth of each application from a host.
+As shown in figure. \ref{fig:mft_qos_rate_host_app}. In T0, we want to limit the application B to the Host with 600 Kbps and we will add the rules matching each 5 tuples from application A and set Meter 1 to those rule. In the meantime, the bandwidth of Meter 1 is set to 600/N Kbps if there are N connections built from application B of the host.
+In T1, marked as (a), If we want to limit the application A to the Host with 300 Kbps, we will add the rules matching each 5 tuples from application A and set Meter 2 to those rule.
+Then in T2, marked as (b), application B has already been limited since T0 and we want to change the bandwidth of application B from 600Kbps to 1000 Kbps.
+However, We would not change the rule in flow table, we only change the bandwidth of the correspond meter in the meter table. That is, the bandwidth of Meter 1 will be set from 600/N to 1000/N. Therefore, there only have a little overhead between switch and controller. That is, if there are Ni connections in time Ti, then the bandwidth will be set as shown as following.
+Similarly, we can use the same way to limit the whole network while not only to the specific host.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/mft_qos_rate_host_app}
+\caption{Illustration of rate-limiting for a certain application of certain host}
+\label{fig:mft_qos_rate_host_app}
+\end{figure}
+
+\subsubsection{The flow table order of QoS service}
+QoS service is located at flow table 2, because the location of NAT/DHCP, firewall are determined. Here we only need to decide the arrangement of QoS and forwarding.
+Let's consider the scenario that we put the QoS flow table after the forwarding flow table. Plus, we have only two services enabled, forwarding and QoS, then suppose a host is not limited by QoS policies. The very first packet will not be affected in both arrangement. For the following packets, the difference can be observed. The packets which has matched the rules of the forwarding flow table will still cause packet-ins when they go to QoS flow table. This is not supposed to happen, since the host is not restrained by QoS policies and any packet-in increase the controller's load.
+To reduce the burden of the controller, we put QoS flow table ahead of forwarding flow table. In this scenario, all packets that pass through QoS flow table will continue to go to forwarding flow table without matching any QoS rules. Then the packets except the very first packet will just be forwarded by forwarding service instead of causing packet-ins. Hence the controller's load will decrease. To use our system, the forwarding service is necessary, so there is no such scenario that users enable QoS and disable forwarding.
 
 
 
@@ -336,8 +382,6 @@ since our controller will automatically flood out broadcast packets.
 In this service, when the first packet in a new connection incoming, it will cause a packet-in event because there is no corresponding rule. When controller receives the packet, it will record IP-layer information, including source IP, destination IP, input port number, source mac address and destination mac address. With the recorded information, the controller is able to install a 5-tuple forwarding rule for this connection and following packets don’t need to packet-in again. The 5-tuple is source IP, destination IP, network layer protocol, source layer 4 port, and destination layer 4 port.
 
 In order to gather per-session statistics information, 5-tuple rules are needed. This is why we don’t add rules  based on mac address.  The controller installs a pair of dummy rules for every connection, and then request the switch to get current flow statistics every second. In this way, we can get the real-time bandwidth statistics of each connection by just subtracting the byte count from byte count of last second.
-
-
 
 
 
@@ -423,13 +467,13 @@ As shown in Fig. \ref{fig:evaluation_nat_scenario}, the throughput value show th
 Testing data set are mappings of flow attributes and ground truth (also called rules). This testing data set were generated by our system in our lab in National Tsing Hua University in Taiwan in 2016. We manually operated applications to generate traffic. After the system generated rules, it exported them into a file, because we wanted to do 10-fold cross validation on the testing data set. There are 14659 rules in total, and there are 137 applications if we view each platform version of an application as one application.
 
 \subsubsection{Validation method}
-Although the system can do online training and classifying, we do offline training and classifying, shown as Fig. \ref{fig:classifcation_evaluation}. More specifically, when we did online training to analyze traffic, get ground truth, and export the rules into a file. We do 10-fold cross validation on the rules. There are 10 rounds in 10-fold cross validation. Each round, we split testing data set into training dataset and classifying dataset.
+Although the system can do online training and classifying, we do offline training and classifying, shown as Fig. \ref{fig:evaluation_classification}. More specifically, when we did online training to analyze traffic, get ground truth, and export the rules into a file. We do 10-fold cross validation on the rules. There are 10 rounds in 10-fold cross validation. Each round, we split testing data set into training dataset and classifying dataset.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/classifcation_evaluation}
-\caption{Architecture of application identification system in classifying phase}
-\label{fig:classifcation_evaluation}
+\includegraphics[width=3in]{./figures/evaluation_classification}
+\caption{Result of Multiple Table Performance Evaluation}
+\label{fig:evaluation_classification}
 \end{figure}
 
 \subsubsection{Mapping of category names}
