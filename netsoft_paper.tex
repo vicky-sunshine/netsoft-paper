@@ -19,6 +19,7 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{amsmath}
+\usepackage[super]{nth}
 \interdisplaylinepenalty=2500
 
 \graphicspath{{figures/}}
@@ -456,9 +457,20 @@ In classifying phase, we only use those mappings which have been used by one app
 \label{fig:evaluation_nat_result}
 \end{figure}
 
-The single flow table framework implementation is easier than multiple flow table framework, but the multiple flow table framework is more flexible. To verify the efficacy of multiple flow table vCPE framework, this experiment use the NAT service to compare the throughput between single flow table vCPE and multiple flow table vCPE.
-;;We use the iPerf  to generate the UDP packets and send to server from client, and set the fixed value to bandwidth at 100Mbps. These experiments would use diffrent payload sizes to inspect their performances.
-As shown in Fig. \ref{fig:evaluation_nat_scenario}, the throughput value show that the performances of large packets such as 1024 bytes and 1470 bytes is better than small packets. Because the NAT service need to set the packet header field and small payload size would send more packets to server at the same time, the performance of larger packets is well. We can see that the throughput value of multiple table framework is close to single table framework. So we can realize the multiple table framework is more flexible than single table framework, and the performance is close to each other, which shown as \ref{fig:evaluation_nat_result}.
+The single flow table framework implementation is easier than multiple flow table framework,
+but the multiple flow table framework is more flexible.
+To verify the efficacy of multiple flow table vCPE framework,
+this experiment use the NAT service to compare the throughput between single flow table vCPE and multiple flow table vCPE.
+
+To begin with, an overview of the experiment environment is shown in Fig. \ref{fig:evaluation_nat_scenario}.
+The NFV controller run on the Dell PowerEdge R630 Rack Server,
+and the SDN switch use the Pica8 P-3290 switch.
+We use the iPerf2 to generate the network traffic.
+The iperf server would connect the public IP address with 140.114.71.178, and then the iperf client connect to the SDN switch, and is controlled by NFV controller.
+NFV controller run the NAT service, but use the different framework that are single flow table and multiple flow table.
+
+We use the iPerf  to generate the UDP packets and send to server from client, and set the fixed value to bandwidth at 100Mbps. These experiments would use diffrent payload sizes to inspect their performances.
+As shown in Fig. \ref{fig:evaluation_nat_result}, the throughput value show that the performances of large packets such as 1024 bytes and 1470 bytes is better than small packets. Because the NAT service need to set the packet header field and small payload size would send more packets to server at the same time, the performance of larger packets is well. We can see that the throughput value of multiple table framework is close to single table framework. So we can realize the multiple table framework is more flexible than single table framework, and the performance is close to each other, which shown as Fig. \ref{fig:evaluation_nat_result}.
 
 
 
@@ -503,7 +515,21 @@ F1\ score = \dfrac{2\times Precision\times Recall}{Precsion + Recall}
 
 \subsection{QoS Evaluation Limit Host bandwidth}
 
+We choose a way to verify our function is downloading the file in that it is a situation always takes up the network recourse in real world. We decide to download the image of Ubuntu 14.04 which is about 1GB size.
 
+As shown in Fig. \ref{fig:qos_limit_host}, The NFV controller run on the Dell PowerEdge R630 Rack Server, and would excute the QoS service. And the OpenFlow-enable switch use the the Edge-Core AS5712-54X switch that operating system is PicOS TM r2.6.
+
+We used a desktop computer to be the experimental host and record the bandwidth in every 2 seconds. In the beginning, we start downloading the file without limiting and the rate is between 190000 Kbps to 410000 Kbps.
+At \nth{10} seconds, we wanted to limit this host’s bandwidth to 1024Kbps and we added the rule the destination MAC address is matching this desktop computer with a meter of 1024Kbps. Then we can find out the bandwidth from this host is decrease and be limited to about 1024Kbps immediately.
+
+At \nth{36} seconds, we cancel the limit to this host. That is, removing the meter field from the rule in the flow table. Obviously, we also observed the bandwidth of download from this host is rising rapidly and without limiting.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/qos_limit_host}
+\caption{Limit the download rate to a host.}
+\label{fig:qos_limit_host}
+\end{figure}
 
 \subsection{QoS Evaluation Limit application bandwidth}
 
