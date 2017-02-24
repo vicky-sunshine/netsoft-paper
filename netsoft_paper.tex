@@ -316,7 +316,7 @@ The service follows these steps:
   \end{enumerate}
 \end{enumerate}
 
-Our system support multitable, but a specific table for DHCP service is not required.
+Our system support multiple flow table, but a specific flow table for DHCP service is not required.
 The reason is that only one rule will be installed for all hosts who request for DHCP service.
 When the service is disabled, the DHCP rule will be deleted,
 and the packets will continue to pass through our service chain.
