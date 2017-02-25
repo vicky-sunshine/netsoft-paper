@@ -198,7 +198,18 @@ In this paper, our QoS integrates with a flow classification engine and offers t
 
 
 \subsection{Application Identification}
-Application identification is to identify each flow as an application name to enable QoS management system to do bandwidth control or distribution at application level \cite{dynamic-qos-umeida}\cite{network-slicing-asia-pacific}. The application name means the name of application which establishes the flow. A flow is defined by 5-tuple (source IP, source port, destination IP, destination port, and transport layer protocol). Applications include desktop applications, native mobile applications, and web applications, such as Facebook, Skype, YouTube, Instagram, Line and WeChat. We use supervised machine learning and a method based on inspecting domain name service (DNS) responses to do flow classification. After application identification system classifies a flow as an application name, it sends the classification result to a server with database. The server stores the classification result into the database, and waits for requests from QoS management system. The detail will be described in section \ref{sec:app_identification}.
+Application identification is to identify each flow as an application name to enable QoS management system
+to do bandwidth control or distribution at application level \cite{dynamic-qos-umeida}\cite{network-slicing-asia-pacific}.
+The application name means the name of application which establishes the flow.
+A flow is defined by 5-tuple (source IP, source port, destination IP, destination port, and transport layer protocol).
+Applications include desktop applications, native mobile applications,
+and web applications, such as Facebook, Skype, YouTube, Instagram, Line and WeChat.
+We use supervised machine learning and a method based on inspecting domain name service (DNS)
+responses to do flow classification.
+After application identification system classifies a flow as an application name,
+it sends the classification result to a server with database.
+The server stores the classification result into the database, and waits for requests from QoS management system.
+The detail will be described in section \ref{sec:app_identification}.
 
 
 
@@ -373,11 +384,23 @@ To reduce the burden of the controller, we put QoS flow table ahead of forwardin
 
 
 \section{Application Identification Method}\label{sec:app_identification}
-In order to let QoS management system be able to control or distribute bandwidth at application level, we designed and implemented an application identification system (also called flow classification system) to judge each flow is established by what application. In other words, the application identification system can classify each flow as an application name in real time, rather than a rough category or a transport layer protocol. The corresponding application name of a flow means the name of the application which establishes the flow. We use supervised machine learning (ML) and a method based on inspecting domain name service (DNS) responses to do flow classification. The system analyzes the packets whose transport protocol are TCP or UDP. Except for DNS responses, the system only reads headers to get transport layer information of packets without inspecting their payload.
+In order to let QoS management system be able to control or distribute bandwidth at application level,
+we designed and implemented an application identification system (also called flow classification system)
+to judge each flow is established by what application.
+In other words, the application identification system can classify each flow as an application name in real time,
+rather than a rough category or a transport layer protocol.
+The corresponding application name of a flow means the name of the application which establishes the flow.
+We use supervised machine learning (ML) and a method based on inspecting domain name service (DNS) responses to do flow classification.
+The system analyzes the packets whose transport protocol are TCP or UDP.
+Except for DNS responses, the system only reads headers to get transport layer information of
+packets without inspecting their payload.
+
 
 
 \subsection{Architecture of application identification system}
-There are training phase (also called preparation phase) and classifying phase, their architectures are shown in Fig. \ref{fig:class_training} and Fig. \ref{fig:class_classifying} respectively. These architectures can be integrated, and do training and classifying in the same time.
+There are training phase (also called preparation phase) and classifying phase,
+their architectures are shown in Fig. \ref{fig:class_training} and Fig. \ref{fig:class_classifying} respectively.
+These architectures can be integrated, and do training and classifying in the same time.
 
 \begin{figure}[!t]
 \centering
@@ -396,31 +419,55 @@ There are training phase (also called preparation phase) and classifying phase, 
 
 
 \subsection{Overall procedure of application identification}
-In order to let QoS management system be able to control or distribute bandwidth at application level, we designed and implemented an application identification system (also called flow classification system) to judge each flow is established by what application. In other words, the application identification system can classify each flow as an application name in real time, rather than a rough category or a transport layer protocol. The corresponding application name of a flow means the name of the application which establishes the flow. We use supervised machine learning (ML) and a method based on inspecting domain name service (DNS) responses to do flow classification. The system analyzes the packets whose transport protocol are TCP or UDP. Except for DNS responses, the system only reads headers to get transport layer information of packets without inspecting their payload.
-
-
-
+In training phase, we generate some data needed by our proposed method.
+In classifying phase, if a flow meet some requirement, we use the method based on inspecting DNS response to classify;
+otherwise, we use supervised ML to classify.
 
 \subsection{Procedure of Supervised ML in our system}
-In training phase, the architecture is show in Fig. \ref{fig:class_training}. Flow classification engine is to build classification model by training data from Trainer, and update the model when new training data comes. Trainer is to analyze traffic from mirror port to get flow attributes. After Trainer finishes calculating flow attributes of a flow, it gets ground truth of the flow from Scanner or App Meta Server to generate training data, and sends training data to flow classification engine. App Meta Server is to store mappings of 5-tuple and ground truth from Scanner, and accept queries from Trainer. Scanner is to get mappings of 5-tuple and ground truth from OS.
-In classifying phase, the architecture is shown in Fig. \ref{fig:class_classifying}. Flow classification engine is to use flow attributes from Classifier and classification model to get a classification result, and sends classification result to Classifier. Classifier is to analyze traffic from mirror port to get flow attributes. After Classifier finishes calculating flow attributes of a flow, it use flow attributes to ask flow classification engine for classification result if needed.
+In training phase, the architecture is show in Fig. \ref{fig:class_training}.
+Flow classification engine is to build classification model by training data from Trainer,
+and update the model when new training data comes.
+Trainer is to analyze traffic from mirror port to get flow attributes.
+After Trainer finishes calculating flow attributes of a flow,
+it gets ground truth of the flow from Scanner or App Meta Server to generate training data\cite{Iwai2016},
+and sends training data to flow classification engine.
+App Meta Server is to store mappings of 5-tuple and ground truth from Scanner, and accept queries from Trainer.
+Scanner is to get mappings of 5-tuple and ground truth from OS\cite{app-awareness-sdn}.
+In classifying phase, the architecture is shown in Fig. \ref{fig:class_classifying}.
+Flow classification engine is to use flow attributes from Classifier and classification model to get a classification result,
+and sends classification result to Classifier.
+Classifier is to analyze traffic from mirror port to get flow attributes.
+After Classifier finishes calculating flow attributes of a flow,
+it use flow attributes to ask flow classification engine for classification result if needed.
 
 
 
 \subsection{Flow attributes we adopted in supervised ML}
-In ML, when system calculates flow attributes, we only use transport layer information of packets which have payload. We use Application Round (APPR) proposed by \cite{classfication-cloud} to analyze flow behavior. We use number of packets, packet sizes, transmission time, transmission direction, throughput, and APPR to define flow attributes. There are 69 attributes in total, as defined in our previous work \cite{Chia-Chin-master}.
-
+In ML, when system calculates flow attributes, we only use transport layer information of packets which have payload.
+We use Application Round (APPR) proposed by \cite{classfication-cloud} to analyze flow behavior.
+We use number of packets, packet sizes, transmission time,
+transmission direction, throughput, and APPR to define flow attributes.
+There are 69 attributes in total, as defined in our previous work \cite{Chia-Chin-master}.
 
 
 
 \subsection{Algorithms we adopted in supervised ML}
-We use algorithms implemented by Weka, a famous open source ML tool developed at the University of Waikato. We call Weka Java API to build classification model. We use three algorithms, namely RandomSupSpace with RandomTree, FilterClassifier with discretization and RandomTree, and RandomCommittee with RandomTree.
+We use algorithms implemented by Weka, a famous open source ML tool developed at the University of Waikato.
+We call Weka Java API to build classification model.
+We use three algorithms, namely RandomSupSpace with RandomTree\cite{TinKamHo1998},
+FilterClassifier with discretization and RandomTree, and RandomCommittee with RandomTree.
 
 
 
 \subsection{Procedure of a method based on inspecting DNS response in our system}
-In training phase, we collect the mappings of server IP and application name. A mapping of server IP and application name means the application has ever established connection with the server whose IP is the server IP, and the server IP has ever occurred in any DNS response we have captured.
-In classifying phase, we do not use those server IPs which have more than two corresponding applications among the mappings to classify. We only use server IPs which have one corresponding application in the mappings to classify. When system detect a flow, we check whether source IP or destination IP of the flow match any of these server IPs. If it matches, we regard corresponding application name as classification result; otherwise, we use flow attributes of the flow and classification model of supervised ML to classify.
+In training phase, we collect the mappings of server IP and application name.
+A mapping of server IP and application name means the application has ever established connection
+with the server whose IP is the server IP, and the server IP has ever occurred in any DNS response we have captured.
+In classifying phase, we do not use those server IPs which have more than two corresponding applications among the mappings to classify.
+We only use server IPs which have one corresponding application in the mappings to classify.
+When system detect a flow, we check whether source IP or destination IP of the flow match any of these server IPs.
+If it matches, we regard corresponding application name as classification result;
+otherwise, we use flow attributes of the flow and classification model of supervised ML to classify.
 
 
 
@@ -462,10 +509,27 @@ As shown in Fig. \ref{fig:evaluation_nat_result}, the throughput value show that
 
 \subsection{Accuracy of Application Identification}
 \subsubsection{Testing data set}
-Testing data set are mappings of flow attributes and ground truth. These mappings are also called rules. This testing data set were generated by our system in our lab in National Tsing Hua University in Taiwan. We manually operated applications to generate traffic. Each platform of an application took around 50 minutes. When the application identification system generated rules, it exported them into a file, because we wanted to do 10-fold cross validation on a testing data set. There are 14659 rules in total, and there are 137 applications if we count each platform version of an application as one application. The testing data set does not contain all of platform version of each application which is in this testing data set.
+Testing data set are mappings of flow attributes and ground truth.
+These mappings are also called rules.
+This testing data set were generated by our system in our lab in National Tsing Hua University in Taiwan.
+We manually operated applications to generate traffic.
+Each platform of an application took around 50 minutes.
+When the application identification system generated rules, it exported them into a file,
+because we wanted to do 10-fold cross validation on a testing data set.
+There are 14659 rules in total,
+and there are 137 applications if we count each platform version of an application as one application.
+The testing data set does not contain all of platform version of each application which is in this testing data set.
 
 \subsubsection{Validation method}
-Although the system can do online training and classifying, we do offline training and classifying, shown as Fig. \ref{fig:evaluation_classification}. More specifically, when we did online training to analyze traffic, get ground truth, and export the rules into a file. We do 10-fold cross validation on the rules. There are 10 rounds in 10-fold cross validation. We split the data set into 10 subsets. At each round, we used 1 of 10 subsets as a classifying data set and the union of the other subsets as a training data set. Then we did 10 rounds, and each subset acted as the classifying data set exactly once. We implemented Classifier Light and Trainer Light, acting as Classifier and Trainer respectively without the function of analyzing traffic. Because there are labels in classifying data set, we can calculate accuracy.
+Although the system can do online training and classifying,
+we do offline training and classifying, shown as Fig. \ref{fig:evaluation_classification}.
+More specifically, when we did online training to analyze traffic,
+get ground truth, and export the rules into a file. We do 10-fold cross validation on the rules.
+There are 10 rounds in 10-fold cross validation. We split the data set into 10 subsets.
+At each round, we used 1 of 10 subsets as a classifying data set and the union of the other subsets as a training data set.
+Then we did 10 rounds, and each subset acted as the classifying data set exactly once.
+We implemented Classifier Light and Trainer Light, acting as Classifier and Trainer respectively without the function of analyzing traffic.
+Because there are labels in classifying data set, we can calculate accuracy.
 
 \begin{figure}[!t]
 \centering
@@ -475,10 +539,17 @@ Although the system can do online training and classifying, we do offline traini
 \end{figure}
 
 \subsubsection{Mapping of category names}
-Mapping of category names: At each round of 10-fold cross validation We do name mapping on training dataset before we use training data set to build classification model, and do name mapping on classifying data set before we use classifying data set to calculate accuracy. The main reason is that some application have different ground truth in different operating system. After name mapping, there are 99 categories in testing data set.
+Mapping of category names: At each round of 10-fold cross validation We do name mapping on training dataset
+before we use training data set to build classification model,
+and do name mapping on classifying data set before we use classifying data set to calculate accuracy.
+The main reason is that some application have different ground truth in different operating system.
+After name mapping, there are 99 categories in testing data set.
 
 \subsubsection{Accuracy matrices and results}
-To evaluate accuracy, we used precision, recall and F-measure (also called F1 score), as shown in Eq. (1), Eq. (2), and Eq. (3) []. In each round in 10-fold cross validation, we calculate precision and recall of each category to calculate F1 score of each category. After ten rounds, we calculate average F1 score of each category in 10 rounds. Table I shows F1 score of each category in top 40 most popular applications in testing data set. Next, we calculate average F1 score of all categories in 10 rounds, and we get 0.9062. The result (Table. \ref{table:classification_result}) shows it achieved high accuracy, which makes QoS possible to do bandwidth control or distribution at application level.
+To evaluate accuracy, we used precision, recall and F-measure (also called F1 score),
+as shown in Eq. (1), Eq. (2), and Eq. (3) \cite{muc4}. In each round in 10-fold cross validation,
+we calculate precision and recall of each category to calculate F1 score of each category.
+After ten rounds, we calculate average F1 score of each category in 10 rounds. Table I shows F1 score of each category in top 40 most popular applications in testing data set. Next, we calculate average F1 score of all categories in 10 rounds, and we get 0.9062. The result (Table. \ref{table:classification_result}) shows it achieved high accuracy, which makes QoS possible to do bandwidth control or distribution at application level.
 
 
 \begin{equation}
