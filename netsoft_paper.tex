@@ -102,10 +102,10 @@ By Eric
 
 \section{System Description}
 \subsection{Overview of Network Function}\label{ssec:desc_nfv_overview}
-With the concept of SDN-enabled VNFs \cite{sdn-enabled}, SDN technology work not only for traffic steering but also as a part of network functions. In this idea, network functions have been achieved by the synergies between computer and network infrastructures, shown in Fig. \ref{fig:desc_nfv_overview}. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch, used for stateless processing.
+With the concept of SDN-enabled VNFs \cite{sdn-enabled} \cite{manage-nve}, SDN technology work not only for traffic steering but also as a part of network functions. In this idea, network functions have been achieved by the synergies between computer infrastructures(NFV) and network infrastructures(NFVI) \cite{nfv2014-v121}\cite{nfv2014-v111}\cite{nfv2015}, shown in Fig. \ref{fig:desc_nfv_overview}. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch \cite{sp:openflow1.3}, used for stateless processing.
 
 \subsubsection{Stateful Processing component (VNF controller in container)}
-This component have to control the workflow, keep the state associated with the VNF, and provide interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We use SDN controller to implement the NFV controller and it’s worth noting that we use southbound APIs of SDN controller framework to handle the interface between the stateful and stateless component with OpenFlow protocol, which was originally designed for this.
+This component have to control the workflow, keep the state associated with the VNF, and provide interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We use SDN controller to implement the NFV controller and it’s worth noting that we use southbound APIs of SDN controller framework to handle the interface between the stateful and stateless component with OpenFlow protocol \cite{onf}, which was originally designed for this.
 
 \subsubsection{Stateless Processing component (SDN datapath)}
 Stateless processing component, are implemented by SDN datapath resources, which is optimized for data plane traffic processing. Since SDN switch have decoupled the control plane and data plane, so it can accept the control message from the stateful processing component.
@@ -149,7 +149,7 @@ Each component is introduced in the subsection below.
 
 \subsubsection{Infrastructure Controller}
 
-The infrastructure controller is a composed Docker management server with the ability to manage the Docker resources like containers and images. The infrastructure doesn't handle the customer authentication or maintaining the state of running service, it just follows the request from the infrastructure orchestrator to create, delete, start, stop and inspect containers.
+The infrastructure controller is a composed Docker \ref{seo2014}\ref{compare-vm-container} management server with the ability to manage the Docker resources like containers and images. The infrastructure doesn't handle the customer authentication or maintaining the state of running service, it just follows the request from the infrastructure orchestrator to create, delete, start, stop and inspect containers.
 
 \subsubsection{Infrastructure Orchestrator}
 
@@ -161,7 +161,7 @@ The cloud database is used for restoring the of our vCPE services, which include
 
 \subsubsection{VNF Controllers}
 
-VNF Controllers contains a SDN controller developed with ryu framework and a remote launcher module. The SDN controller does not have a remote launcher module to remotely execute a SDN controller. We built a light-weight server as a launcher module to resolve the remotely execution issue. The remote launcher module monitor the SDN controller process ID (PID) and properly kill the SDN controller process ID when on demand. When the infrastructure controller once create the container, the remote module will run up initially, waiting request from VNF Orchestrator. The details of SDN controller design will be presented at section \ref{sec:mft}.
+VNF Controllers contains a SDN controller developed with ryu framework \cite{web:ryu} and a remote launcher module. The SDN controller does not have a remote launcher module to remotely execute a SDN controller. We built a light-weight server as a launcher module to resolve the remotely execution issue. The remote launcher module monitor the SDN controller process ID (PID) and properly kill the SDN controller process ID when on demand. When the infrastructure controller once create the container, the remote module will run up initially, waiting request from VNF Orchestrator. The details of SDN controller design will be presented at section \ref{sec:mft}.
 
 \subsubsection{VNF Orchestrator}
 
