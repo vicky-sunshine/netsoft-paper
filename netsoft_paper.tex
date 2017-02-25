@@ -24,14 +24,12 @@
 
 \graphicspath{{figures/}}
 
-% correct bad hyphenation here
-\hyphenation{op-tical net-works semi-conduc-tor}
-
 
 
 
 
 \begin{document}
+
 
 % title
 % Linebreaks \\ can be used within to get better formatting as desired.
@@ -122,7 +120,7 @@ Using the advantages of this architecture, we can assign stateless or light-weig
 
 
 \subsection{Service Deployment Model}
-With architecture mentioned in Fig. \ref{fig:desc_nfv_overview}, we come up with a network function service deployment model. Because computing infrastructures handles the algorithm and policies, and the generic network devices only do stateless processing, the customer just need to buy a general SDN switch at their home gateway and will have a different network function service by subscribing different the NFV controller through our vCPE platform.
+Different from some related works are discussed about virtualizing network functions located in PE devices \cite{vcpe-enhance}, we come up with a network function service deployment model, with architecture mentioned in Fig. \ref{fig:desc_nfv_overview}. Because computing infrastructures handles the algorithm and policies, and the generic network devices only do stateless processing, the customer just need to buy a general SDN switch at their home gateway and will have a different network function service by subscribing different the NFV controller through our vCPE platform.
 
 Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model. Each green area is a local network domain of customer. At the gateway of this domain, there’s a SDN-enabled switch. The customer can subscribe to our vCPE service through our dashboard. After subscribing, the vCPE system will create a new docker container, in which running a SDN controller we developed. The customer only need to setup the gateway SDN switch to connect the SDN controller by the OpenFlow protocol, then the switch will handle these service.
 
@@ -149,7 +147,7 @@ Each component is introduced in the subsection below.
 
 \subsubsection{Infrastructure Controller}
 
-The infrastructure controller is a composed Docker \ref{seo2014}\ref{compare-vm-container} management server with the ability to manage the Docker resources like containers and images. The infrastructure doesn't handle the customer authentication or maintaining the state of running service, it just follows the request from the infrastructure orchestrator to create, delete, start, stop and inspect containers.
+The infrastructure controller is a composed Docker management server with the ability to manage the Docker resources like containers and images \cite{seo2014}\cite{compare-vm-container}. The infrastructure doesn't handle the customer authentication or maintaining the state of running service, it just follows the request from the infrastructure orchestrator to create, delete, start, stop and inspect containers.
 
 \subsubsection{Infrastructure Orchestrator}
 
