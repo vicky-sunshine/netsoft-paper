@@ -330,12 +330,12 @@ In order to gather per-session statistics information, 5-tuple rules are needed.
 
 
 \subsection{QoS}
-QoS service is mainly for traffic control and we provide three management funtion for QoS service. We will introduce these three strategy first and then discuss the flow table order of QoS service in multiple table model.
+QoS service is mainly for traffic control and we provide two management funtion for QoS service. We will introduce these three strategy first and then discuss the flow table order of QoS service in multiple table model.
 
 \subsubsection{Rate limitation of hosts}
 When some hosts take up a lot of bandwidth of network, it will make other hosts in slow speed or make traffic congestion. To prevent this, rate limiting is used to control the rate of traffic from a host. For implementing the host rate limitation, we create a meter for desired bandwidth first and then add a flow, of which match is host’s mac address and action is the meter we just created.
 
-The concept of this option is shown in Fig. \ref{fig:mft_qos_rate_host}. In T0, host 1 and host 2 are not limited yet. Since host 2 takes up a lot of bandwidth from network in T0~T1, the network administrator sets host 2 rate-limited under 400 Kbps. When controller receive this request, marked as (a), it will create a new meter  with meter id = 1 and bandwidth = 400 Kbps, and set the rule in the flow table with destination MAC address = HOST1 MAC and meter = 1. According to our flow table, it will limit the rate of the target host. Then the traffic from Host 2 will reduce and be limited with 400Kbps immediately. The similar situation also occurs to Host 1 in T2. The administrator chooses to set Host1 under 600 Kbps, marked as (b), and then traffic from Host 1 will be limited with 600Kbps.
+The concept of this option is shown in Fig. \ref{fig:mft_qos_rate_host}. In T0, Host 1 and Host 2 are not limited yet. Since host 2 takes up a lot of bandwidth from network in T0 to T1, the network administrator sets Host 2 rate-limited under 400 Kbps. When controller receive this request, marked as (a), it will create a new meter with meter id = 1 and bandwidth = 400 Kbps, and set the rule in the flow table with destination MAC address = MAC address of Host 1 and meter = 1. According to our flow table, it will limit the rate of the target host. Then the traffic from Host 2 will reduce and be limited with 400Kbps immediately. The similar situation also occurs to Host 1 in T2. The administrator chooses to set Host 1 under 600 Kbps, marked as (b), and then traffic from Host 1 will be limited with 600Kbps.
 
 
 \begin{figure}[!t]
@@ -554,9 +554,13 @@ At \nth{36} seconds, we cancel the limit to this host. That is, removing the met
 \subsection{QoS Evaluation Limit application bandwidth}
 
 There are a lot of people using the streaming applications nowadays and those applications always take up an amount of network’s source. We integrated with application identification to classify each flow belongs what the application is, consequently.
+
 In our experiment environment, as shown in Fig. \ref{fig:class_classifying}. We use a mirror switch to replicate the whole traffic form SDN switch and provide the application identification system to classify the flows belong which applications. Application identification system will upload the result of identification to database. Then the controller will get the result from the database and update the flow information of application. Therefore, we can use the flow information (5 tuple and the result of identification) to complete our limitation to application.
+
 We choose YouTube to verify our limitation function of applications and there are 3 Hosts (Host 1, Host 2 and Host 3) in the same network domain. Then we will limit the Youtube’s bandwidth of this network domain, that is, the sum of bandwidth from Youtube of Host 1, Host 2 and Host 3.
+
 As shown in Figure. \ref{fig:mft_qos_rate_domain_app}, in the beginning without limitation, the total bandwidth of this network is about 3000 Kbps to 4000 Kbps. At \nth{8} seconds, we limited the total bandwidth from Youtube to 2048 Kbps in this network domain. Therefore, we can find out the total traffic of Youtube from this network domain is reducing immediately. Clearly, the total traffic from Youtube will not exceed the limited bandwidth (2048Kbps) since we limited the Youtube to this network domain.
+
 When using our limitation function of application, we can guarantee the traffic of this network domain will not over the network capacity and prevent the traffic congestion in short.
 
 
