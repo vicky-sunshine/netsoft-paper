@@ -624,7 +624,7 @@ At \nth{36} seconds, we cancel the limit to this host. That is, removing the met
 
 There are a lot of people using the streaming applications nowadays and those applications always take up an amount of network’s source. We integrated with application identification to classify each flow belongs what the application is, consequently.
 
-In our experiment environment, as shown in Fig. \ref{fig:class_classifying}. We use a mirror switch to replicate the whole traffic form SDN switch and provide the application identification system to classify the flows belong which applications. Application identification system will upload the result of identification to database. Then the controller will get the result from the database and update the flow information of application. Therefore, we can use the flow information (5 tuple and the result of identification) to complete our limitation to application.
+In our experiment environment, as shown in Fig. \ref{fig:class_classifying}. We use a mirror switch to replicate the whole traffic form SDN switch and provide the application identification system to classify the flows belong which applications. Application identification system will upload the result of identification to database. Then the controller will get the result from the database and update the flow information of application. Therefore, we can use the flow information (5-tuple and the result of identification) to complete our limitation to application.
 
 We choose YouTube to verify our limitation function of applications and there are 3 Hosts (Host 1, Host 2 and Host 3) in the same network domain. Then we will limit the Youtube’s bandwidth of this network domain, that is, the sum of bandwidth from Youtube of Host 1, Host 2 and Host 3.
 
