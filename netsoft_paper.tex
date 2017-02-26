@@ -20,21 +20,15 @@
 \usepackage{url}
 \usepackage{amsmath}
 \usepackage[super]{nth}
-\interdisplaylinepenalty=2500
 
 \graphicspath{{figures/}}
 
-
-
-
-
 \begin{document}
-
 
 % title
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Performance Optimization of Service Chain for vCPE in Small Size Network with OpenFlow Switch}
+\title{Performance Optimization of Service Chain \\ for vCPE in Small Size Network with OpenFlow Switch}
 
 % author names and IEEE memberships
 \author{
@@ -86,7 +80,7 @@ SDN, vCPE, VNF, NFV, OpenFlow
 \section{Introduction}
 \IEEEPARstart{S}{DN} has been developing almost a decade since the first Openflow article had be presented in 2008. Openflow gives a brand new viewpoint on network research, and makes innovation on industries. This technic proposed not just a novel architecture but also bring out more methods of flexible traffic engineering. After tons of implementations and researches had been proposed, this architecture exposed some weakness in performance. The main concept of this architecture is separating data plane and control plane that put smart control and multi-path into real world. But legacy hardware design eventually put this perfect design into reality. To achieve high speed packet exchange, ternary content-addressable memory (TCAM) plays an important role in legacy fabric switching. This hardware design speed up the packet switching but it also cause high cost and less size problems.
 In the beginning, most of SDN switch used legacy hardware design and just add software API support for temporary solution. The smaller TCAM size comes the less flow control rules but it can keep high performance in packet switching. It brings out inter-datacenter dynamic traffic routing because that scenario doesn’t need much flow entries.
-At the same time as SDN was developed, Network Function Virtualization (NFV) has been introduced by Telco operators. Operators want to reduce their cost on maintaining old telco platform which may has been operated in 50 years. To replace the old platform with high maintenance cost, they use virtual machine (VM) based on new computers as solutions. This method can really save a lot of money in maintaining old platform but not all of operators have the same requirement as AT&T; there is another idea about reducing OPEX and CAPEX in enterprise networks that is vCPE which was innovated by NEC. vCPE manage network functions on operation side to reduce cost which was deployed on cloud. Although both of technical ideas are perfect, it still address two critical problems. The first one is the lack of hardware support because these ideas need large size of tables to achieve multi VNF support. And the other is VM based on cloud may slow down the high speed etwork exchanging network.
+At the same time as SDN was developed, Network Function Virtualization (NFV) has been introduced by Telco operators. Operators want to reduce their cost on maintaining old telco platform which may has been operated in 50 years. To replace the old platform with high maintenance cost, they use virtual machine (VM) based on new computers as solutions. This method can really save a lot of money in maintaining old platform but not all of operators have the same requirement as AT\&T; there is another idea about reducing OPEX and CAPEX in enterprise networks that is vCPE which was innovated by NEC. vCPE manage network functions on operation side to reduce cost which was deployed on cloud. Although both of technical ideas are perfect, it still address two critical problems. The first one is the lack of hardware support because these ideas need large size of tables to achieve multi VNF support. And the other is VM based on cloud may slow down the high speed etwork exchanging network.
 From Pica-8 finished their first OpenFlow switched, there are so many implementation method on a SDN switch. Even Open Network Foundation (ONF) has a series of testing processes, it can’t shows completely testing result of SDN switch especially performance. Let us take flow entries as example, there are single table and multi table architectures much more based on hardware or software. Bandwidth control APIs have been an option in OpenFlow 1.3 but there are many switches still didn’t support these API. Even it did support, there are still at least two implementation methods should be noticed. Meters and per queue show different ways controlling bandwidth not mention to accuracy of bandwidth.
 Service chain is another concept with vCPE framework because enterprise will apply a bulk of network services. This technic inherit weakness of SDN switches and vCPE so there is no standard to unified interface to link all services. It’s hard to combine and link all switches and cloud service in such complex situation. Different services on cloud must be working fine with different SDN switches and we believe that’s why most of service chain was implemented in VM on the cloud.
 
@@ -587,7 +581,7 @@ F1\ score = \dfrac{2\times Precision\times Recall}{Precsion + Recall}
 \centering
 \begin{tabular}{|l|l|l|l|}
 \hline
-Application name    & \begin{tabular}[c]{@{}l@{}}Average \\ F1 score\end{tabular}    & Application name  & \begin{tabular}[c]{@{}l@{}}Average \\ F1 score\end{tabular}   \\ \hline
+\begin{tabular}[c]{@{}l@{}} Application \\ name\end{tabular}    & \begin{tabular}[c]{@{}l@{}}Average \\ F1 score\end{tabular}    & \begin{tabular}[c]{@{}l@{}}Application \\ name\end{tabular}  & \begin{tabular}[c]{@{}l@{}}Average \\ F1 score\end{tabular}   \\ \hline
 OneDrive            & 0.991255            & Trello            & 0.988889           \\ \hline
 gamerAnimad         & 0.985714            & Dropbox           & 0.985714           \\ \hline
 AmazonMusi          & 0.977461            & MEGAsync          & 0.968889           \\ \hline
