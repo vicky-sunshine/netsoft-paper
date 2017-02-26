@@ -102,10 +102,10 @@ By Eric
 \subsection{Overview of Network Function}\label{ssec:desc_nfv_overview}
 With the concept of SDN-enabled VNFs \cite{sdn-enabled} \cite{manage-nve}, SDN technology work not only for traffic steering but also as a part of network functions. In this idea, network functions have been achieved by the synergies between computer infrastructures(NFV) and network infrastructures(NFVI) \cite{nfv2014-v121}\cite{nfv2014-v111}\cite{nfv2015}, shown in Fig. \ref{fig:desc_nfv_overview}. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch \cite{sp:openflow1.3}, used for stateless processing.
 
-\subsubsection{Stateful Processing component (VNF controller in container)}
+\subsubsection{Stateful Processing Component (VNF controller in container)}
 This component have to control the workflow, keep the state associated with the VNF, and provide interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We use SDN controller to implement the NFV controller and it’s worth noting that we use southbound APIs of SDN controller framework to handle the interface between the stateful and stateless component with OpenFlow protocol \cite{onf}, which was originally designed for this.
 
-\subsubsection{Stateless Processing component (SDN datapath)}
+\subsubsection{Stateless Processing Component (SDN datapath)}
 Stateless processing component, are implemented by SDN datapath resources, which is optimized for data plane traffic processing. Since SDN switch have decoupled the control plane and data plane, so it can accept the control message from the stateful processing component.
 
 Using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch, for example, packet filtering and packet counting, to load-off the computing resources. If we want to update our service, we just need to update the stateful component, since the stateless component just follow the command from stateful components
@@ -133,7 +133,7 @@ Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model.
 
 
 
-\subsection{Architecture of the vCPE system}
+\subsection{Architecture of the vCPE System}
 The architecture as shown in Fig. \ref{fig:desc_vcpe_framework} including of a Infrastructure Controller, Infrastructure Orchestrator, Cloud Database, VNF Controllers and VNF Orchestrator.
 The Infrastructure Orchestrator, VNF Orchestrator and Cloud Database are web servers
 Each component is introduced in the subsection below.
@@ -341,7 +341,7 @@ In order to gather per-session statistics information, 5-tuple rules are needed.
 \subsection{QoS}
 QoS service is mainly for traffic control and we provide two management funtion for QoS service. We will introduce these two strategy first and then discuss the flow table order of QoS service in multiple table model.
 
-\subsubsection{Rate limitation of hosts}
+\subsubsection{Rate Limitation of Hosts}
 When some hosts take up a lot of bandwidth of network, it will make other hosts in slow speed or make traffic congestion. To prevent this, rate limiting is used to control the rate of traffic from a host. For implementing the host rate limitation, we create a meter for desired bandwidth first and then add a flow, of which match is host’s mac address and action is the meter we just created.
 
 The concept of this option is shown in Fig. \ref{fig:mft_qos_rate_host}. In T0, host 1 and host 2 are not limited yet. Since host 2 takes up a lot of bandwidth from network in T0 to T1, the network administrator sets host 2 rate-limited under 400 Kbps. When controller receive this request, marked as (a), it will create a new meter with meter id = 1 and bandwidth = 400 Kbps, and set the rule in the flow table with destination MAC address = MAC address of host 1 and meter = 1. According to our flow table, it will limit the rate of the target host. Then the traffic from host 2 will reduce and be limited with 400Kbps immediately. The similar situation also occurs to host 1 in T2. The administrator chooses to set host 1 under 600 Kbps, marked as (b), and then traffic from host 1 will be limited with 600Kbps.
@@ -355,7 +355,7 @@ The concept of this option is shown in Fig. \ref{fig:mft_qos_rate_host}. In T0, 
 \end{figure}
 
 
-\subsubsection{Rate limitation of applications}
+\subsubsection{Rate Limitation of Applications}
 There are more and more network’s applications used such as online games, video streaming, conference call, etc. Therefore, there are massive traffic working in the network. Consequently, we integrate with a flow classification engine to identify the flow belongs which application is. The integration scenario will be shown as Fig. \ref{fig:class_classifying}.
 
 
@@ -372,7 +372,7 @@ It is worth mentioning that we would not change any rules in flow table and we o
 \label{fig:mft_qos_rate_app}
 \end{figure}
 
-\subsubsection{The flow table order of forwarding and QoS service}
+\subsubsection{The Flow Table Order of Forwarding and QoS Service}
 Since the location of NAT, DHCP and firewall are determined. Here we only need to decide the arrangement of QoS and forwarding.
 Let's consider the scenario that we put the QoS flow table after the forwarding flow table. Plus, we have only two services enabled, forwarding and QoS, then suppose a host is not limited by QoS policies. The very first packet will not be affected in both arrangement. For the following packets, the difference can be observed. The packets which has matched the rules of the forwarding flow table will still cause packet-ins when they go to QoS flow table. This is not supposed to happen, since the host is not restrained by QoS policies and any packet-in increase the controller's load.
 To reduce the burden of the controller, we put QoS flow table ahead of forwarding flow table. In this scenario, all packets that pass through QoS flow table will continue to go to forwarding flow table without matching any QoS rules. Then the packets except the very first packet will just be forwarded by forwarding service instead of causing packet-ins. Hence the controller's load will decrease. To use our system, the forwarding service is necessary, so there is no such scenario that users enable QoS and disable forwarding.
@@ -396,7 +396,7 @@ packets without inspecting their payload.
 
 
 
-\subsection{Architecture of application identification system}
+\subsection{Architecture of Application Identification System}
 There are training phase (also called preparation phase) and classifying phase,
 their architectures are shown in Fig. \ref{fig:class_training} and Fig. \ref{fig:class_classifying} respectively.
 These architectures can be integrated, and do training and classifying in the same time.
@@ -417,21 +417,21 @@ These architectures can be integrated, and do training and classifying in the sa
 
 
 
-\subsection{Overall procedure of application identification}
+\subsection{Overall Procedure of Application Identification}
 In training phase, we generate some data needed by our proposed method.
 In classifying phase, if a flow meet some requirement, we use the method based on inspecting DNS response to classify;
 otherwise, we use supervised ML to classify.
 
-\subsection{Procedure of Supervised ML in our system}
+\subsection{Procedure of Supervised ML}
 In training phase, the architecture is show in Fig. \ref{fig:class_training}.
 Flow classification engine is to build classification model by training data from Trainer,
 and update the model when new training data comes.
 Trainer is to analyze traffic from mirror port to get flow attributes.
 After Trainer finishes calculating flow attributes of a flow,
-it gets ground truth of the flow from Scanner or App Meta Server to generate training data\cite{Iwai2016},
+it gets ground truth of the flow from Scanner or App Meta Server to generate training data,
 and sends training data to flow classification engine.
 App Meta Server is to store mappings of 5-tuple and ground truth from Scanner, and accept queries from Trainer.
-Scanner is to get mappings of 5-tuple and ground truth from OS\cite{app-awareness-sdn}.
+Scanner is to get mappings of 5-tuple and ground truth from OS.
 In classifying phase, the architecture is shown in Fig. \ref{fig:class_classifying}.
 Flow classification engine is to use flow attributes from Classifier and classification model to get a classification result,
 and sends classification result to Classifier.
@@ -441,7 +441,7 @@ it use flow attributes to ask flow classification engine for classification resu
 
 
 
-\subsection{Flow attributes we adopted in supervised ML}
+\subsection{Flow ttributes of Supervised ML}
 In ML, when system calculates flow attributes, we only use transport layer information of packets which have payload.
 We use Application Round (APPR) proposed by \cite{classfication-cloud} to analyze flow behavior.
 We use number of packets, packet sizes, transmission time,
@@ -450,7 +450,7 @@ There are 69 attributes in total, as defined in our previous work \cite{Chia-Chi
 
 
 
-\subsection{Algorithms we adopted in supervised ML}
+\subsection{Algorithms of Supervised ML}
 We use algorithms implemented by Weka, a famous open source ML tool developed at the University of Waikato.
 We call Weka Java API to build classification model.
 We use three algorithms, namely RandomSupSpace with RandomTree\cite{TinKamHo1998},
@@ -458,7 +458,7 @@ FilterClassifier with discretization and RandomTree, and RandomCommittee with Ra
 
 
 
-\subsection{Procedure of a method based on inspecting DNS response in our system}
+\subsection{Procedure of a Method Based on Inspecting DNS Response}
 In training phase, we collect the mappings of server IP and application name.
 A mapping of server IP and application name means the application has ever established connection
 with the server whose IP is the server IP, and the server IP has ever occurred in any DNS response we have captured.
@@ -472,7 +472,7 @@ otherwise, we use flow attributes of the flow and classification model of superv
 
 
 
-\section{PERFORMANCE EVALUATION}
+\section{Performance Evaluation}
 \subsection{Multiple Table Performance}
 
 \begin{figure}[!t]
@@ -507,7 +507,7 @@ As shown in Fig. \ref{fig:evaluation_nat_result}, the throughput value show that
 
 
 \subsection{Accuracy of Application Identification}
-\subsubsection{Testing data set}
+\subsubsection{Testing Data Set}
 Testing data set are mappings of flow attributes and ground truth.
 These mappings are also called rules.
 This testing data set were generated by our system in our lab in National Tsing Hua University in Taiwan.
@@ -519,7 +519,7 @@ There are 14659 rules in total,
 and there are 137 applications if we count each platform version of an application as one application.
 The testing data set does not contain all of platform version of each application which is in this testing data set.
 
-\subsubsection{Validation method}
+\subsubsection{Validation Method}
 Although the system can do online training and classifying,
 we do offline training and classifying, shown as Fig. \ref{fig:evaluation_classification}.
 More specifically, when we did online training to analyze traffic,
@@ -537,14 +537,14 @@ Because there are labels in classifying data set, we can calculate accuracy.
 \label{fig:evaluation_classification}
 \end{figure}
 
-\subsubsection{Mapping of category names}
+\subsubsection{Mapping of Category Names}
 Mapping of category names: At each round of 10-fold cross validation We do name mapping on training dataset
 before we use training data set to build classification model,
 and do name mapping on classifying data set before we use classifying data set to calculate accuracy.
 The main reason is that some application have different ground truth in different operating system.
 After name mapping, there are 99 categories in testing data set.
 
-\subsubsection{Accuracy matrices and results}
+\subsubsection{Accuracy Matrices and Results}
 To evaluate accuracy, we used precision, recall and F-measure (also called F1 score),
 as shown in Eq. (1), Eq. (2), and Eq. (3) \cite{muc4}. In each round in 10-fold cross validation,
 we calculate precision and recall of each category to calculate F1 score of each category.
@@ -621,11 +621,11 @@ At \nth{36} seconds, we cancel the limit to this host. That is, removing the met
 \label{fig:mft_qos_rate_domain_app}
 \end{figure}
 
-\subsection{QoS Evaluation Limit application bandwidth}
+\subsection{QoS Evaluation Limit Application Bandwidth}
 
 There are a lot of people using the streaming applications nowadays and those applications always take up an amount of network’s source. We integrated with application identification to classify each flow belongs what the application is, consequently.
 
-In our experiment environment, as shown in Fig. \ref{fig:class_classifying}. We use a mirror switch to replicate the whole traffic form SDN switch and provide the application identification system to classify the flows belong which applications. Application identification system will upload the result of identification to database. Then the controller will get the result from the database and update the flow information of application. Therefore, we can use the flow information (5 tuple and the result of identification) to complete our limitation to application.
+In our experiment environment, as shown in Fig. \ref{fig:class_classifying}. We use a mirror switch to replicate the whole traffic form SDN switch and provide the application identification system to classify the flows belong which applications. Application identification system will upload the result of identification to database. Then the controller will get the result from the database and update the flow information of application. Therefore, we can use the flow information (5-tuple and the result of identification) to complete our limitation to application.
 
 We choose YouTube to verify our limitation function of applications and there are 3 hosts (host 1, host 2 and host 3) in the same network domain. Then we will limit the Youtube’s bandwidth of this network domain, that is, the sum of bandwidth from Youtube of host 1, host 2 and host 3.
 
@@ -635,7 +635,7 @@ When using our limitation function of application, we can guarantee the traffic 
 
 
 
-\section{Conclusion and future works}
+\section{Conclusion and Future Works}
 (Eric)
 
 
