@@ -427,10 +427,10 @@ Flow classification engine is to build classification model by training data fro
 and update the model when new training data comes.
 Trainer is to analyze traffic from mirror port to get flow attributes.
 After Trainer finishes calculating flow attributes of a flow,
-it gets ground truth of the flow from Scanner or App Meta Server to generate training data\cite{Iwai2016},
+it gets ground truth of the flow from Scanner or App Meta Server to generate training data,
 and sends training data to flow classification engine.
 App Meta Server is to store mappings of 5-tuple and ground truth from Scanner, and accept queries from Trainer.
-Scanner is to get mappings of 5-tuple and ground truth from OS\cite{app-awareness-sdn}.
+Scanner is to get mappings of 5-tuple and ground truth from OS.
 In classifying phase, the architecture is shown in Fig. \ref{fig:class_classifying}.
 Flow classification engine is to use flow attributes from Classifier and classification model to get a classification result,
 and sends classification result to Classifier.
