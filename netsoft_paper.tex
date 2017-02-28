@@ -28,7 +28,7 @@
 % title
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Performance Optimization of Service Chain \\ for vCPE in Small Size Network with OpenFlow Switch}
+\title{Performance Optimization of Service Chain \\ for vCPE in Small Size Network \\ with OpenFlow Switch}
 
 % author names and IEEE memberships
 \author{
@@ -37,11 +37,12 @@ Nen-Fu Huang\IEEEauthorrefmark{1}
 Chia-An Li\IEEEauthorrefmark{1},
 Chi-Hsuan Li\IEEEauthorrefmark{1},
 Chia-Chi Chen\IEEEauthorrefmark{1},
-I-Hsien Hsu\IEEEauthorrefmark{1},
+I-Hsien Hsu\IEEEauthorrefmark{1}, \\
 Che-Chuan Li \IEEEauthorrefmark{1},
 Ching-Hsuan Chen\IEEEauthorrefmark{2} and,
 I-Ju Liao\IEEEauthorrefmark{1}
 }
+
 \IEEEauthorblockA{
 \IEEEauthorrefmark{1}
 Department of Computer Science National Tsing Hua University, Hsinchu, Taiwan\\
@@ -72,20 +73,16 @@ SDN, vCPE, VNF, NFV, OpenFlow
 \IEEEpeerreviewmaketitle{}
 
 
-
-
-
 % Introduction
 % First paragraph of paper need be big Alhabet
 \section{Introduction}
-\IEEEPARstart{S}{DN} has been developing almost a decade since the first Openflow article had be presented in 2008. Openflow gives a brand new viewpoint on network research, and makes innovation on industries. This technic proposed not just a novel architecture but also bring out more methods of flexible traffic engineering. After tons of implementations and researches had been proposed, this architecture exposed some weakness in performance. The main concept of this architecture is separating data plane and control plane that put smart control and multi-path into real world. But legacy hardware design eventually put this perfect design into reality. To achieve high speed packet exchange, ternary content-addressable memory (TCAM) plays an important role in legacy fabric switching. This hardware design speed up the packet switching but it also cause high cost and less size problems.
+\IEEEPARstart{S}{DN} has been developing almost a decade since the first Openflow article had be presented in 2008\cite{openflow-campus-network}. Openflow gives a brand new viewpoint on network research, and makes innovation on industries. This technic proposed not just a novel architecture but also bring out more methods of flexible traffic engineering. After tons of implementations and researches had been proposed, this architecture exposed some weakness in performance. The main concept of this architecture is separating data plane and control plane that put smart control and multi-path into real world. But legacy hardware design eventually put this perfect design into reality. To achieve high speed packet exchange, ternary content-addressable memory (TCAM) plays an important role in legacy fabric switching. This hardware design speed up the packet switching but it also cause high cost and less size problems.
 In the beginning, most of SDN switch used legacy hardware design and just add software API support for temporary solution. The smaller TCAM size comes the less flow control rules but it can keep high performance in packet switching. It brings out inter-datacenter dynamic traffic routing because that scenario doesn’t need much flow entries.
 At the same time as SDN was developed, Network Function Virtualization (NFV) has been introduced by Telco operators. Operators want to reduce their cost on maintaining old telco platform which may has been operated in 50 years. To replace the old platform with high maintenance cost, they use virtual machine (VM) based on new computers as solutions. This method can really save a lot of money in maintaining old platform but not all of operators have the same requirement as AT\&T; there is another idea about reducing OPEX and CAPEX in enterprise networks that is vCPE which was innovated by NEC. vCPE manage network functions on operation side to reduce cost which was deployed on cloud. Although both of technical ideas are perfect, it still address two critical problems. The first one is the lack of hardware support because these ideas need large size of tables to achieve multi VNF support. And the other is VM based on cloud may slow down the high speed etwork exchanging network.
 From Pica-8 finished their first OpenFlow switched, there are so many implementation method on a SDN switch. Even Open Network Foundation (ONF) has a series of testing processes, it can’t shows completely testing result of SDN switch especially performance. Let us take flow entries as example, there are single table and multi table architectures much more based on hardware or software. Bandwidth control APIs have been an option in OpenFlow 1.3 but there are many switches still didn’t support these API. Even it did support, there are still at least two implementation methods should be noticed. Meters and per queue show different ways controlling bandwidth not mention to accuracy of bandwidth.
 Service chain is another concept with vCPE framework because enterprise will apply a bulk of network services. This technic inherit weakness of SDN switches and vCPE so there is no standard to unified interface to link all services. It’s hard to combine and link all switches and cloud service in such complex situation. Different services on cloud must be working fine with different SDN switches and we believe that’s why most of service chain was implemented in VM on the cloud.
 
 Therefore, the purpose of this paper can be summarized as follows:
-
 \begin{enumerate}
 \item To achieve extremely speed of packet exchanging of vCPE in small size network, this study proposed a mechanism to control OpenFlow tables which is in different hardware switches such as Lagopus, Pica-8 and Edgecore. It supports single table and multi-table implementation in different switches and sends status and information message to Ryu controller. This mechanism brings out a novel implementation method of VNF that combine hardware and software operations. It not only makes hardware usage more efficiency but also stays maximum flexibility in NFV deployment.
 
@@ -231,7 +228,7 @@ The detail will be described in section \ref{sec:app_identification}.
 \end{figure*}
 
 \subsection{Multiple Flow Tables Strategy}
-In subsection \ref{ssec:desc_nfv_overview}, the vCPE service design architecture have been introduced. The network functions are handled by the cooperation between SDN controller on cloud and SDN switch at the local network gateway. The controller transform the network functions to series of OpenFlow rules requests and send to SDN switch. Following the orders from controller, the SDN switch inserts rules to its flow tables, checks incoming packets against the flow entry match fields, and execute the actions in matching rules. The flow table defines all matching and corresponding processing, thus playing an important role to executive network function.
+In subsection \ref{ssec:desc_nfv_overview}, the vCPE service design architecture have been introduced. The network functions are handled by the cooperation between SDN controller on cloud and SDN switch at the local network gateway. The controller transform the network functions to series of OpenFlow rules requests and send to SDN switch. Following the orders from controller, the SDN switch inserts rules to its flow tables, checks incoming packets against the flow entry match fields, and execute the actions in matching rules. The flow table\cite{sdn-ft} defines all matching and corresponding processing, thus playing an important role to executive network function.
 
 Since the flow table is a crucial component, and we find that single flow table binds us to implement our network functions. The \cite{onf-multi-tables} also mentioned two condition for single flow table is too restrictive. The first is a single packet need to perform independent actions based on matching different fields. The second is that the packet needs two-stage processing. Involves into both situation, our network functions implemented by multiple flow tables strategy.
 
