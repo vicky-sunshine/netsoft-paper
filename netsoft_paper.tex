@@ -97,13 +97,6 @@ This paper is structured as follows. Section II introduce the overall architectu
 
 
 
-\section{Related Work}
-By Eric
-
-
-
-
-
 \section{System Description}
 \subsection{Overview of Network Function}\label{ssec:desc_nfv_overview}
 With the concept of SDN-enabled VNFs \cite{sdn-enabled} \cite{manage-nve}, SDN technology work not only for traffic steering but also as a part of network functions. In this idea, network functions have been achieved by the synergies between computer infrastructures(NFV) and network infrastructures(NFVI) \cite{nfv2014-v121}\cite{nfv2014-v111}\cite{nfv2015}, shown in Fig. \ref{fig:desc_nfv_overview}. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch \cite{sp:openflow1.3}, used for stateless processing.
@@ -181,7 +174,7 @@ The proposed vCPE service provides following network functions.
 The firewall service could filter the packets based on packet header fields, including MAC address, IP, and layer4 protocols. The network manager can add new rules or remove rules to the access control list through our vCPE GUI.
 
 \subsubsection{NAT}
-The NAT service is a network function that can remap  IP address to another one. The Source NAT (SNAT) is typically used by internal users (inside private network) to access the Internet (outside network). The network function uses the action “Set-Field”, which defined by OpenFlow protocol for rewriting packet header fields. Via vCPE GUI interface, the network manager can set up the WAN port of SDN switch, public IP, default gateway, and local network address when using this function.
+The NAT service is a network function that can remap  IP address to another one. The Source NAT (SNAT) is typically used by internal users (inside private network) to access the Internet (outside network). The network function uses the action “Set-Field”, which deined by OpenFlow protocol for rewriting packet header fields. Via vCPE GUI interface, the network manager can set up the WAN port of SDN switch, public IP, default gateway, and local network address when using this function.
 
 \subsubsection{DHCP}
 DHCP service allocates IP addresses to hosts dynamically. To implement the function, the SDN controller cope with UDP packets which use port 67 and 68. It generates DHCP offer and DHCP acknowledge to reply DHCP discovery and DHCP request received from the hosts.
