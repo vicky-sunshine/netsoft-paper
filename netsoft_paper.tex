@@ -104,19 +104,19 @@ An NFV is a VNF controller, mainly used for addressing stateful processing and N
 \end{figure}
 
 \subsubsection{Stateful Processing Component (VNF Controller in VM/Container)}
-This component is used to control the workflow, maintain the state associated with the VNF, and provide an interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We used an SDN controller to implement the NFV controller; and notably, we use southbound APIs of the SDN controller framework to manage the interface between the stateful and stateless component with OpenFlow protocol, which was originally designed for this purpose.
+This component is used to control the workflow, maintain the state associated with the VNF, and provide an interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We used an SDN controller to implement the VNF controller; and notably, we use southbound APIs of the SDN controller framework to manage the interface between the stateful and stateless components with the OpenFlow protocol, which was originally designed for this purpose.
 
 \subsubsection{Stateless Processing Component (SDN Datapath)}
 Stateless processing component is implemented by SDN datapath resources and is optimized for data plane traffic processing. Because an SDN switch can be decoupled with control plane and data plane, the switch can accept the control messages from the stateful processing component.
 
-By using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch (e.g., packet filtering and packet counting) to reduce the load on the computing resources. If we want to update our service, we are required to update only the stateful component, because the stateless component merely follows the commands from stateful component.
+By using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch (e.g., packet filtering and packet counting) to reduce the load on the computing resources. If we want to update our service, we are required to update only the stateful component, because the stateless component merely follows the commands from the stateful component.
 
 
 
 \subsection{Service Deployment Model}
-Unlike a related study that explored the virtualization of network function in PE devices \cite{vcpe-enhance}, we introduced a network function service deployment model based on the NetFATE (Network Function at the Edge) approach \cite{netfate}; the archtecture of the model is presented in Fig. \ref{fig:desc_nfv_overview}. Because computing infrastructures involves algorithms and policies and the generic network devices perform only stateless processing, the customers need to simply purchase a general SDN switch for their home gateway. They can obtain a different network function service by subscribing to a different the NFV controller through our vCPE platform.
+Unlike a related study that explored the virtualization of network function in PE devices \cite{vcpe-enhance}, we introduced a network function service deployment model based on the NetFATE (Network Function at the Edge) approach \cite{netfate}; the archtecture of the model is presented in Fig. \ref{fig:desc_nfv_overview}. Because computing infrastructures involves algorithms and policies and the generic network devices perform only stateless processing, the customers need to simply purchase a general SDN switch for their home gateway. They can obtain a different network function service by subscribing to a different VNF controller through our vCPE platform.
 
-Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model. Each green area is a local network domain of the customer. An SDN-enabled switch is presented at the gateway of this domain. The customer can subscribe to our vCPE service through our dashboard. After subscription, the vCPE system creates a new Docker container in which an SDN controller is running. The customer only needs to set up the gateway SDN switch to connect the SDN controller through the OpenFlow protocol; thereafter, the switch will executes the service.
+Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model. Each green area is a local network domain of the customer. An SDN switch is presented at the gateway of this domain. The customer can subscribe to our vCPE service through our dashboard. After subscription, the vCPE system creates a new Docker container or new VM in which an SDN controller is run. The customer only needs to set up the gateway SDN switch to connect the SDN controller through the OpenFlow protocol; thereafter, the switch executes the service.
 
 \begin{figure}[!t]
 \centering
@@ -128,7 +128,7 @@ Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model.
 
 
 \subsection{vCPE System Architecture}
-The architecture (Fig. \ref{fig:desc_vcpe_framework}) is adapted from the NFV-MANO architectural framework in \cite{nfv2014-v111}, including an infrastructure controller, an infrastructure orchestrator, a cloud database, VNF controllers and a VNF Orchestrator. The infrastructure orchestrator, VNF orchestrator and cloud database are web servers. Each component is introduced in the following subsection.
+The architecture (Fig. \ref{fig:desc_vcpe_framework}) is adapted from the NFV-MANO architectural framework in \cite{nfv2014-v111}, including an infrastructure controller, an infrastructure orchestrator, a cloud database, VNF controllers and a VNF Orchestrator. Each component is introduced in the following subsection.
 
 \begin{figure}[!t]
 \centering
@@ -139,11 +139,11 @@ The architecture (Fig. \ref{fig:desc_vcpe_framework}) is adapted from the NFV-MA
 
 \subsubsection{Infrastructure Controller}
 
-The infrastructure controller comprises a Docker management server that can manage the Docker resources like containers. The infrastructure does not manage  customer authentication or maintaining the state of the running service; however, it follows the request from the infrastructure orchestrator to create, delete, start, stop, and inspect containers and VMs.
+The infrastructure controller comprises a Docker management server that can manage the Docker resources like containers and images and a OpenStack server that can manage the VM resources. The infrastructure controller does not manage customer authentication or maintaining the state of the running service; however, it follows the request from the infrastructure orchestrator to create, delete, start, stop, and inspect containers and VMs.
 
 \subsubsection{Infrastructure Orchestrator}
 
-The infrastructure orchestrator plays a key role in our system. It connects and automates the workflows when our services are deployed. When a customer subscribes to our service, the infrastructure orchestrator first authenticates the customer, calls the infrastructure controller to create a container or a VM for the customer, and then updates the information in the database. The infrastructure orchestrator controls the entire lifecycle of our vCPE service.
+The infrastructure orchestrator plays a key role in our system. It connects and automates the workflows when our services are deployed. When a customer subscribes to our service, the infrastructure orchestrator first authenticates the customer, calls the infrastructure controller to create a container or a VM for the customer, and then updates the information in the database. The infrastructure orchestrator controls the entire lifecycle of our vCPE services.
 
 \subsubsection{Cloud Database}
 
@@ -151,11 +151,11 @@ The cloud database is used for restoring the metadata of our vCPE services, whic
 
 \subsubsection{VNF Controllers}
 
-VNF controllers comprises an SDN controller developed using ryu framework\cite{web:ryu} and a remote launcher module. The SDN controller does not have a remote launcher module for remotely executing an SDN controller. We built a light-weight server as a launcher module to resolve this problem. The remote launcher module monitors the SDN controller process ID (PID) and kills the SDN controller PID on demand. Once the infrastructure controller once creates the container, the remote module will initially runs, waiting for requests from VNF Orchestrator. The details of an SDN controller design are presented at Section \ref{sec:mft}.
+VNF controllers comprises an SDN controller developed using ryu framework \cite{web:ryu} and a remote launcher module. The SDN controller does not have a remote launcher module for remotely executing an SDN controller. We built a light-weight server as a launcher module to resolve this problem. The remote launcher module monitors the SDN controller process ID (PID) and kills the SDN controller PID on demand. Once the infrastructure controller  creates the container or the VM, the remote module will initially runs, waiting for requests from VNF Orchestrator. The details of an SDN controller design are presented at Section \ref{sec:mft}.
 
 \subsubsection{VNF Orchestrator}
 
-The VNF orchestrator is a web application server hosted on Amazon web server, and provides to customers an online dashboard for vCPE and containers management and configuration. Through the web-based UI provided by the VNF orchestrator, customers can subscribe to the desired service and without typing any command through the command line interface. After receiving the subscription message, the VNF orchestrator requests the infrastructure orchestrator to create a new VNF controller, and then sends the virtual CPE configuration to the new VNF controller. Based on configuration demands under different conditions, the network administrator can select any of the listed network functions on the dashboard, such as Firewall, NAT, DHCP, and quality of service (QoS) management.
+The VNF orchestrator is a web application server hosted on Amazon web server, and provides to customers an online dashboard for vCPE services management and configuration. Through the web-based UI provided by the VNF orchestrator, customers can subscribe to the desired service without typing any command through the command line interface. After receiving the subscription message, the VNF orchestrator requests the infrastructure orchestrator to create a new VNF controller, and then sends the virtual CPE configuration to the new VNF controller. Based on configuration demands under different conditions, the network administrator can select any of the listed network functions on the dashboard, such as Firewall, NAT, DHCP, and quality of service (QoS) management.
 
 
 
