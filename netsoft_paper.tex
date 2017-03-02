@@ -171,13 +171,13 @@ The NAT service is a network function that can remap the IP address to another o
 \subsubsection{DHCP}
 DHCP dynamically allocates IP addresses to hosts.
 To implement this function, the SDN controller copes with UDP packets that use port 67 and 68.
-The SDN controller generates DHCP offers and DHCP acknowledgements in reply to DHCP discoveries and DHCP requests received from the hosts.
+The SDN controller generates DHCP Offer packets and DHCP Ack packets in reply to DHCP Discover packets and DHCP Request packets received from the hosts.
 
 \subsubsection{Forwarding}
 The forwarding Service is a basic service that forwards traffic to its destination. We used the Mac address learning concept to implement the forwarding function.
 
 \subsubsection{QoS}
-Quality of Service (QoS) is considered in controlling the traffic flows of a network and prevent the traffic from exceeding the network capacity and leading to congestion. Therefore, we implemented bandwidth management using meters which are defined within OpenFlow protocol 1.3, to set the limitation on the bandwidth. In addition to achieving network functions virtualization with SDN technology, we enabled network administrator to manage and monitor a network more easily. Consequently, we can offer the user the highest network quality under limitations on network resources without traffic congestion.
+QoS is used to control the traffic flows of a network and prevent the traffic from exceeding the network capacity and leading to congestion. Therefore, we implemented bandwidth management using meters which are defined within OpenFlow protocol 1.3, to set the limitation on the bandwidth. In addition to achieving network functions virtualization with SDN technology, we enabled network administrator to manage and monitor a network more easily. Consequently, we can offer the user the highest network quality under limitations on network resources without traffic congestion.
 In this study, we integrated QoS with a flow classification engine and offered two methods of bandwidth management.
 
 \begin{itemize}[\IEEEsetlabelwidth{Z}]
@@ -204,13 +204,13 @@ to execute bandwidth control or distribution at application level \cite{dynamic-
 \end{figure*}
 
 \subsection{Multiple Flow Tables Strategy}
-In subsection \ref{ssec:desc_nfv_overview}, the vCPE service design architecture have been introduced. The network functions are handled by the cooperation between SDN controller on cloud and SDN switch at the local network gateway. The controller transform the network functions to series of OpenFlow rules requests and send to SDN switch. Following the orders from controller, the SDN switch inserts rules to its flow tables, checks incoming packets against the flow entry match fields, and execute the actions in matching rules. The flow table\cite{sdn-ft} defines all matching and corresponding processing, thus playing an important role to executive network function.
+In subsection \ref{ssec:desc_nfv_overview}, we introduce the vCPE service design architecture. The network functions are managed through cooperation between the SDN controller on the cloud and SDN switch at the local network gateway. The controller transforms the network functions into a series of OpenFlow rule requests and sends it to the SDN switch. Following the orders from the controller, the SDN switch inserts the rules into its flow tables, examines the incoming packets against the flow entry match fields, and executes the actions in matching rules. The flow table \cite{sdn-ft} defines all matching and corresponding processing, thus playing an important role in the executive network function.
 
-Since the flow table is a crucial component, and we find that single flow table binds us to implement our network functions. The\cite{onf-multi-tables} also mentioned two condition for single flow table is too restrictive. The first is a single packet need to perform independent actions based on matching different fields. The second is that the packet needs two-stage processing. Involves into both situation, our network functions implemented by multiple flow tables strategy.
+We found that a single flow table restricts the implementation of our network functions. In \cite{onf-multi-tables} , two conditions under which a single flow table is too restrictive were reported. The first is a condition where a single packet must perform independent actions based on matching with different fields. The second is a condition where the packet requires two-stage processing. To satisfy both conditions, we implemented the network functions by using a multiple flow table strategy.
 
-In multiple flow tables strategy, the most important question is: which flow table should we insert rules into? We use the network function as a demarcation, that is, SDN applications which are responsible for specific network functions will only insert rules to one specific flow table, so we can focus on the design of the network function itself. In this way, however, the order of flow table become crucial. Should we put this network function at first, or the other? The answer is about the type of match and action in the rules generated by the network function
+In a multiple flow table strategy, it is most important to determine which flow table the rules should be inserted into. We used the network function as a demarcation, that is, SDN applications responsible for specific network functions inserted rules into one specific flow table to enable us to focus on the design of the network function itself. However, the order of the flow table and the sequence of the network functions become crucial. This can be addressed by considering the type of match and action in the rules generated by the network function.
 
-The network functions of vCPE services including Firewall, NAT, DHCP, Forwarding and QoS. We have determined the order of each function, shown in \ref{fig:mft_table_overview}. (Notice that the flow tables are counting from zero) In the following subsections, we will introduce how to implement these network functions, which type of rules will be inserted to SDN switch, and how these rules affect our decision of the order of flow tables.
+The network functions of vCPE services are the firewall service, NAT, DHCP, forwarding, and QoS. The order of each function was determined as shown in Fig. \ref{fig:mft_table_overview} (note that the flow tables are counted from zero). In the following sections, we introduce the method of implementing these network functions, the type of rules to be inserted into the SDN switch, and the effect of these rules on deciding the order of the flow tables
 
 
 
