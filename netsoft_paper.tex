@@ -62,7 +62,7 @@ In the last decade, along with the continuously developing of software defined n
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-Software defined network, virtual customer premise equipment, VNF, NFV, OpenFlow
+Software defined network, virtual customer premise equipment, network function virtualization, OpenFlow
 \end{IEEEkeywords}
 
 \IEEEpeerreviewmaketitle{}
@@ -71,7 +71,7 @@ Software defined network, virtual customer premise equipment, VNF, NFV, OpenFlow
 % Introduction
 % First paragraph of paper need be big Alhabet
 \section{Introduction}
-\IEEEPARstart{S}{oftware} Define Network \cite{sdn-new-norm}, \cite{sdn-comprehensive} has been developing almost a decade since the first Openflow article had be presented in 2008\cite{openflow-campus-network}. Openflow\cite{sp:openflow13} gives a brand new viewpoint on network research, and makes innovation on industries. This technic proposed not just a novel architecture but also bring out more methods of flexible traffic engineering. After tons of implementations and researches had been proposed, this architecture exposed some weakness in performance. The main concept of this architecture is separating data plane and control plane that put smart control and multi-path into real world. But legacy hardware design eventually put this perfect design into reality. To achieve high speed packet exchange, ternary content-addressable memory (TCAM) plays an important role in legacy fabric switching. This hardware design speed up the packet switching but it also cause high cost and less size problems.
+\IEEEPARstart{S} oftware Define Network \cite{sdn-new-norm}, \cite{sdn-comprehensive} has been developing almost a decade since the first Openflow article had be presented in 2008\cite{openflow-campus-network}. Openflow\cite{sp:openflow13} gives a brand new viewpoint on network research, and makes innovation on industries. This technic proposed not just a novel architecture but also bring out more methods of flexible traffic engineering. After tons of implementations and researches had been proposed, this architecture exposed some weakness in performance. The main concept of this architecture is separating data plane and control plane that put smart control and multi-path into real world. But legacy hardware design eventually put this perfect design into reality. To achieve high speed packet exchange, ternary content-addressable memory (TCAM) plays an important role in legacy fabric switching. This hardware design speed up the packet switching but it also cause high cost and less size problems.
 In the beginning, most of SDN switch used legacy hardware design and just add software API support for temporary solution. The smaller TCAM size comes the less flow control rules but it can keep high performance in packet switching. It brings out inter-datacenter dynamic traffic routing because that scenario doesn’t need much flow entries.
 At the same time as SDN was developed, Network Function Virtualization (NFV) \cite{nfvwp}\cite{nfv-survey}\cite{laptop-sdn} has been introduced by Telco operators. Operators want to reduce their cost on maintaining old telco platform which may has been operated in 50 years. To replace the old platform with high maintenance cost, they use virtual machine (VM) based on new computers as solutions. This method can really save a lot of money in maintaining old platform but not all of operators have the same requirement as AT\&T; there is another idea about reducing OPEX and CAPEX in enterprise networks that is vCPE which was innovated by NEC\cite{nec-vcpe}. vCPE manage network functions on operation side to reduce cost which was deployed on cloud \cite{cloud4nfv}. Although both of technical ideas are perfect, it still address two critical problems. The first one is the lack of hardware support because these ideas need large size of flow tables to achieve multi VNF support. And the other is VM based on cloud may slow down the high speed network exchanging network\cite{nfv-placemet},\cite{nfv-placement-model}.
 From Pica8\cite{pica8-switch} finished their first OpenFlow switches, there are so many implementation method on a SDN switch. Even Open Network Foundation (ONF)\cite{onf} has a series of testing processes, it can’t shows completely testing result of SDN switch especially performance. Let us take flow entries as example, there are single flow table and multiple flow table architectures much more based on hardware or software. Bandwidth control APIs have been an option in OpenFlow 1.3 but there are many switches still didn’t support these API. Even it did support, there are still at least two implementation methods should be noticed. Meters and per queue show different ways controlling bandwidth not mention to accuracy of bandwidth.
@@ -92,30 +92,31 @@ This paper is structured as follows. Section II introduce the overall architectu
 
 
 \section{System Description}
-\subsection{Overview of Network Function}\label{ssec:desc_nfv_overview}
-The use of SDN-enabled VNFs\cite{sdn-enabled}\cite{manage-nve}, SDN technology work not only for traffic steering but also as a part of network functions. In this idea, network functions have been achieved by the synergies between computer infrastructures(NFV) and network infrastructures(NFVI)\cite{nfv2014-v121},\cite{nfv2015}, shown in Fig. \ref{fig:desc_nfv_overview}. The former is a VNF controller, mainly responsible for dealing with stateful processing. The latter is a SDN switch used for stateless processing.
-
-\subsubsection{Stateful Processing Component (VNF controller in container)}
-This component have to control the workflow, keep the state associated with the VNF, and provide interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We use SDN controller to implement the NFV controller and it’s worth noting that we use southbound APIs of SDN controller framework to handle the interface between the stateful and stateless component with OpenFlow protocol, which was originally designed for this.
-
-\subsubsection{Stateless Processing Component (SDN datapath)}
-Stateless processing component, are implemented by SDN datapath resources, which is optimized for data plane traffic processing. Since SDN switch have decoupled the control plane and data plane, so it can accept the control message from the stateful processing component.
-
-Using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch, for example, packet filtering and packet counting, to load-off the computing resources. If we want to update our service, we just need to update the stateful component, since the stateless component just follow the command from stateful components
+\subsection{Overview of Network Functions} \label{ssec:desc_nfv_overview}
+Our network functions (Fig. \ref{fig:desc_nfv_overview}) are designed with SDN-enabled NFV architecture concept \cite{sdn-enabled}, using the synergies between computer infrastructures (NFVs) and network infrastructures (NFVIs) \cite{nfv2014-v121},\cite{nfv2015}.
+An NFV is a VNF controller, mainly used for addressing stateful processing and NFVI is an SDN switch used for stateless processing.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/desc_nfv_overview}
-\caption{Overview of network function.}
+\includegraphics[width=2.5in]{./figures/desc_nfv_overview}
+\caption{Overview of network functions.}
 \label{fig:desc_nfv_overview}
 \end{figure}
+
+\subsubsection{Stateful Processing Component (VNF Controller in VM/Container)}
+This component is used to control the workflow, maintain the state associated with the VNF, and provide an interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We used an SDN controller to implement the NFV controller; and notably, we use southbound APIs of the SDN controller framework to manage the interface between the stateful and stateless component with OpenFlow protocol, which was originally designed for this purpose.
+
+\subsubsection{Stateless Processing Component (SDN Datapath)}
+Stateless processing component is implemented by SDN datapath resources and is optimized for data plane traffic processing. Because an SDN switch can be decoupled with control plane and data plane, the switch can accept the control messages from the stateful processing component.
+
+By using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch (e.g., packet filtering and packet counting) to reduce the load on the computing resources. If we want to update our service, we are required to update only the stateful component, because the stateless component merely follows the commands from stateful component.
 
 
 
 \subsection{Service Deployment Model}
-Different from some related works are discussed about virtualizing network functions located in PE devices\cite{vcpe-enhance}, we come up with a network function service deployment model, with architecture mentioned in Fig. \ref{fig:desc_nfv_overview} based on the NetFATE (Network Function at the Edge) approach\cite{netfate}. Because computing infrastructures handles the algorithm and policies, and the generic network devices only do stateless processing, the customer just need to buy a general SDN switch at their home gateway and will have a different network function service by subscribing different the NFV controller through our vCPE platform.
+Unlike a related study that explored the virtualization of network function in PE devices \cite{vcpe-enhance}, we introduced a network function service deployment model based on the NetFATE (Network Function at the Edge) approach \cite{netfate}; the archtecture of the model is presented in Fig. \ref{fig:desc_nfv_overview}. Because computing infrastructures involves algorithms and policies and the generic network devices perform only stateless processing, the customers need to simply purchase a general SDN switch for their home gateway. They can obtain a different network function service by subscribing to a different the NFV controller through our vCPE platform.
 
-Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model. Each green area is a local network domain of customer. At the gateway of this domain, there’s a SDN-enabled switch. The customer can subscribe to our vCPE service through our dashboard. After subscribing, the vCPE system will create a new docker container, in which running a SDN controller we developed. The customer only need to setup the gateway SDN switch to connect the SDN controller by the OpenFlow protocol, then the switch will handle these service.
+Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model. Each green area is a local network domain of the customer. An SDN-enabled switch is presented at the gateway of this domain. The customer can subscribe to our vCPE service through our dashboard. After subscription, the vCPE system creates a new Docker container in which an SDN controller is running. The customer only needs to set up the gateway SDN switch to connect the SDN controller through the OpenFlow protocol; thereafter, the switch will executes the service.
 
 \begin{figure}[!t]
 \centering
@@ -126,81 +127,69 @@ Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model.
 
 
 
-\subsection{Architecture of the vCPE System}
-The architecture of the vCPE system is adapted from the NFV-MANO architectural framework in \cite{nfv2014-v111}, shown in Fig. \ref{fig:desc_vcpe_framework}, including of a Infrastructure Controller, Infrastructure Orchestrator, Cloud Database, VNF Controllers and VNF Orchestrator.
-The Infrastructure Orchestrator, VNF Orchestrator and Cloud Database are web servers
-Each component is introduced in the subsection below.
+\subsection{vCPE System Architecture}
+The architecture (Fig. \ref{fig:desc_vcpe_framework}) is adapted from the NFV-MANO architectural framework in \cite{nfv2014-v111}, including an infrastructure controller, an infrastructure orchestrator, a cloud database, VNF controllers and a VNF Orchestrator. The infrastructure orchestrator, VNF orchestrator and cloud database are web servers. Each component is introduced in the following subsection.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3.5in]{./figures/desc_vcpe_framework}
+\includegraphics[width=3in]{./figures/desc_vcpe_framework}
 \caption{Architecture of the vCPE framework.}
 \label{fig:desc_vcpe_framework}
 \end{figure}
 
 \subsubsection{Infrastructure Controller}
 
-The infrastructure controller is a composed Docker management server with the ability to manage the Docker resources like containers and images. The infrastructure doesn't handle the customer authentication or maintaining the state of running service, it just follows the request from the infrastructure orchestrator to create, delete, start, stop and inspect containers.
+The infrastructure controller comprises a Docker management server that can manage the Docker resources like containers. The infrastructure does not manage  customer authentication or maintaining the state of the running service; however, it follows the request from the infrastructure orchestrator to create, delete, start, stop, and inspect containers and VMs.
 
 \subsubsection{Infrastructure Orchestrator}
 
-The infrastructure orchestrator plays the key role of our system. It connecting and automating of workflows when we deploy our services. When a customer subscribes, the infrastructure orchestrator authenticates the customer first, next it will call the infrastructure controller to create a container for this customer, and update information in database afterwards. It handle the entire lifecycle of our vCPE service.
+The infrastructure orchestrator plays a key role in our system. It connects and automates the workflows when our services are deployed. When a customer subscribes to our service, the infrastructure orchestrator first authenticates the customer, calls the infrastructure controller to create a container or a VM for the customer, and then updates the information in the database. The infrastructure orchestrator controls the entire lifecycle of our vCPE service.
 
 \subsubsection{Cloud Database}
 
-The cloud database is used for restoring the of our vCPE services, which include each customer’s credential, customer’s container settings and virtual CPE service states. The cloud database is using PostgreSQL, which is a open source, easily customized and object-relational database system. Only Infrastructure Orchestrator has permissions to access cloud database.
+The cloud database is used for restoring the metadata of our vCPE services, which include each customer’s credentials, customer’s container/VM settings, and virtual CPE service states. The cloud database employs PostgreSQL, which is an open source, easily customizable and object-relational database system. Only the infrastructure orchestrator has permissions to access the cloud database.
 
 \subsubsection{VNF Controllers}
 
-VNF Controllers contains a SDN controller developed with ryu framework\cite{web:ryu} and a remote launcher module. The SDN controller does not have a remote launcher module to remotely execute a SDN controller. We built a light-weight server as a launcher module to resolve the remotely execution issue. The remote launcher module monitor the SDN controller process ID (PID) and properly kill the SDN controller process ID when on demand. When the infrastructure controller once create the container, the remote module will run up initially, waiting request from VNF Orchestrator. The details of SDN controller design will be presented at section \ref{sec:mft}.
+VNF controllers comprises an SDN controller developed using ryu framework\cite{web:ryu} and a remote launcher module. The SDN controller does not have a remote launcher module for remotely executing an SDN controller. We built a light-weight server as a launcher module to resolve this problem. The remote launcher module monitors the SDN controller process ID (PID) and kills the SDN controller PID on demand. Once the infrastructure controller once creates the container, the remote module will initially runs, waiting for requests from VNF Orchestrator. The details of an SDN controller design are presented at Section \ref{sec:mft}.
 
 \subsubsection{VNF Orchestrator}
 
-The VNF Orchestrator is a Web application server hosting on Amazon Web server, being online for customer and provide a dashboard for virtual CPE and containers management and configuration.
-Through the web UI provided by the VNF Orchestrator, the customers can subscribe to the desired service and without typing any command via the command line interface (CLI). After receiving the subscribing message, the VNF orchestrator will request the infrastructure orchestrator to create a new VNF controller, and then send the virtual CPE configuration to the new VNF controller. Based on configuration demands under different conditions, the network administrator is able to select any of the listed network functions on the dashboard such as Firewall, NAT, DHCP and QoS management.
+The VNF orchestrator is a web application server hosted on Amazon web server, and provides to customers an online dashboard for vCPE and containers management and configuration. Through the web-based UI provided by the VNF orchestrator, customers can subscribe to the desired service and without typing any command through the command line interface. After receiving the subscription message, the VNF orchestrator requests the infrastructure orchestrator to create a new VNF controller, and then sends the virtual CPE configuration to the new VNF controller. Based on configuration demands under different conditions, the network administrator can select any of the listed network functions on the dashboard, such as Firewall, NAT, DHCP, and quality of service (QoS) management.
 
 
 
 \subsection{Network Functions}
-The proposed vCPE service provides following network functions.
+The proposed vCPE service provides the following network functions.
 
 \subsubsection{Firewall}
-The firewall service could filter the packets based on packet header fields, including MAC address, IP, and layer4 protocols. The network manager can add new rules or remove rules to the access control list through our vCPE GUI.
+The firewall service can filter the packets based on packet header fields, including MAC address, IP, and layer4 protocols. The network manager can add new rules or remove rules from the access control list through our vCPE GUI.
 
 \subsubsection{NAT}
-The NAT service is a network function that can remap  IP address to another one. The Source NAT (SNAT) is typically used by internal users (inside private network) to access the Internet (outside network). The network function uses the action “Set-Field”, which deined by OpenFlow protocol for rewriting packet header fields. Via vCPE GUI interface, the network manager can set up the WAN port of SDN switch, public IP, default gateway, and local network address when using this function.
+The NAT service is a network function that can remap the IP address to another one. The source NAT (SNAT) is typically used by internal users (inside a private network) to access the Internet (outside the network). The network function uses the action set-field action, which is deined by OpenFlow protocol for rewriting packet header fields. Through the vCPE GUI interface, the network manager can set up the WAN port of the SDN switch, public IP, default gateway, and local network address when using this function.
 
 \subsubsection{DHCP}
-DHCP service allocates IP addresses to hosts dynamically. To implement the function, the SDN controller cope with UDP packets which use port 67 and 68. It generates DHCP offer and DHCP acknowledge to reply DHCP discovery and DHCP request received from the hosts.
+DHCP dynamically allocates IP addresses to hosts.
+To implement this function, the SDN controller copes with UDP packets that use port 67 and 68.
+The SDN controller generates DHCP offers and DHCP acknowledgements in reply to DHCP discoveries and DHCP requests received from the hosts.
 
 \subsubsection{Forwarding}
-Forwarding Service is a basic service that forward traffic to its destination and we use the Mac address learning concept to implement our forwarding function.
+The forwarding Service is a basic service that forwards traffic to its destination. We used the Mac address learning concept to implement the forwarding function.
 
 \subsubsection{QoS}
-Quality of Service (QoS) are always used to control the traffic flows of a network and prevent the traffic to exceed the network capacity and cause traffic congestion. Therefore we implement the bandwidth management using meter which is defined within OpenFlow protocol 1.3 to set the limitation of the bandwidth.
-Beside achieving network functions virtualization with SDN technology, we also make the network administrator manage and monitor a network more easily. As a result, we can offer the user the best network quality in the limited network resource without traffic congestion.
-In this paper, our QoS integrates with a flow classification engine and offers the two ways of bandwidth management.
+Quality of Service (QoS) is considered in controlling the traffic flows of a network and prevent the traffic from exceeding the network capacity and leading to congestion. Therefore, we implemented bandwidth management using meters which are defined within OpenFlow protocol 1.3, to set the limitation on the bandwidth. In addition to achieving network functions virtualization with SDN technology, we enabled network administrator to manage and monitor a network more easily. Consequently, we can offer the user the highest network quality under limitations on network resources without traffic congestion.
+In this study, we integrated QoS with a flow classification engine and offered two methods of bandwidth management.
 
 \begin{itemize}[\IEEEsetlabelwidth{Z}]
-\item For a specific host.
-\item For a specific application.
+\item Set the limitation on the bandwidth of a specific host.
+\item Set the limitation on the bandwidth of a specific application.
 \end{itemize}
 
 
 
 \subsection{Application Identification}
-Application identification is to identify each flow as an application name to enable QoS management system
-to do bandwidth control or distribution at application level\cite{dynamic-qos-umeida}\cite{network-slicing-asia-pacific}.
-The application name means the name of application which establishes the flow.
-A flow is defined by 5-tuple (source IP, source port, destination IP, destination port, and transport layer protocol).
-Applications include desktop applications, native mobile applications,
-and web applications, such as Facebook, Skype, YouTube, Instagram, Line and WeChat.
-We use supervised machine learning and a method based on inspecting domain name service (DNS)
-responses to do flow classification.
-After application identification system classifies a flow as an application name,
-it sends the classification result to a server with database.
-The server stores the classification result into the database, and waits for requests from QoS management system.
-The detail will be described in section \ref{sec:app_identification}.
+Application identification entails identifying the application of each flow to enable QoS management system
+to execute bandwidth control or distribution at application level \cite{dynamic-qos-umeida}, \cite{network-slicing-asia-pacific}. The application name indicates the name of the application which establishes the flow. A flow is defined by a 5-tuple (source IP address, source port, destination IP address, destination port, and transport layer protocol). Applications include desktop applications, native mobile applications, and web-based applications, such as Facebook, Skype, YouTube, Instagram, Line, and WeChat. We used supervised machine learning (ML) and a method based on the inspect of domain name service (DNS) responses for flow classification. After the application identification system classifies a flow under an application name, it sends the classification result to a server connected to a database. The server stores the classification result in the database, and waits for requests from the QoS management system. This process is described in detail in Section \ref{sec:app_identification}.
 
 
 
