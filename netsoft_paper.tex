@@ -4,7 +4,7 @@
 %% by HSNL, NTHU
 
 
-\documentclass[journal]{IEEEtran}
+\documentclass[10pt,journal]{IEEEtran}
 
 \usepackage{graphicx}
 \usepackage{indentfirst}
@@ -19,38 +19,34 @@
 
 \begin{document}
 
-
 \title{Performance Optimization of Service Chain for vCPE in Small Networks with OpenFlow Switch}
 
+% \author{Michael~Shell,~\IEEEmembership{Member,~IEEE,}
+%         John~Doe,~\IEEEmembership{Fellow,~OSA,}
+%         and~Jane~Doe,~\IEEEmembership{Life~Fellow,~IEEE}% <-this % stops a space
+% \IEEEcompsocitemizethanks{\IEEEcompsocthanksitem M. Shell was with the Department
+% of Electrical and Computer Engineering, Georgia Institute of Technology, Atlanta,
+% GA, 30332.\protect\\
+% % note need leading \protect in front of \\ to get a newline within \thanks as
+% % \\ is fragile and will error, could use \hfil\break instead.
+% E-mail: see http://www.michaelshell.org/contact.html
+% \IEEEcompsocthanksitem J. Doe and J. Doe are with Anonymous University.}% <-this % stops a space
+% \thanks{Manuscript received April 19, 2005; revised August 26, 2015.}}
+
+
 % author names and IEEE memberships
-\author{\IEEEauthorblockN{
-Nen-Fu Huang\IEEEauthorrefmark{1},
-Chia-An Lee\IEEEauthorrefmark{1},
-Chi-Hsuan Li\IEEEauthorrefmark{1},
-Chia-Chi Chen\IEEEauthorrefmark{1},
-I-Hsien Hsu\IEEEauthorrefmark{1}, \\
-Che-Chuan Li\IEEEauthorrefmark{1},
-Ching-Hsuan Chen\IEEEauthorrefmark{2} and
-I-Ju Liao\IEEEauthorrefmark{1}}
-
-\IEEEauthorblockA{
-\IEEEauthorrefmark{1}
-Department of Computer Science National Tsing Hua University, Hsinchu, Taiwan} \\
-\IEEEauthorblockA{
-\IEEEauthorrefmark{2}
-Institute of Communication Engineering National Tsing Hua University, Hsinchu, Taiwan}
-}
-
-% The paper headers
-% \markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, August~2015}%
-% {Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for IEEE Journals}
+\author{Nen-Fu~Huang, Chia-An~Lee, Chi-Hsuan~Li, Chia-Chi~Chen, I-Hsien~Hsu,\\
+        Che-Chuan~Li, Ching-Hsuan~Chen, and~I-Ju~Liao
+\IEEEcompsocitemizethanks{
+  \IEEEcompsocthanksitem Chia-An Lee, Chi-Hsuan Li, Chia-Chi Chen, I-Hsien Hsu, Che-Chuan Li and I-Ju Liao are with the Department of Computer Science National Tsing Hua University, Hsinchu, Taiwan E-mail: ck\_star2001@hotmail.com
+  \IEEEcompsocthanksitem Ching-Hsuan Chen is with Institute of Communication Engineering National Tsing Hua University, Hsinchu, Taiwan}}
 
 % make the title area
 \maketitle
 
 
 \begin{abstract}
-In the last decade, along with the continuously developing of software defined network (SDN), numerous SDN applications have played important roles in modern network. Virtual Customer Premise Equipment (vCPE) is one of potential applications can make game change because it can reduce OPEX and CAPEX in the same time. This service compose of many technologies with complex architecture like Virtualized Network Functions (VNFs) and Service Chaining. Many researches discuss algorithm or mechanism to link multiple VNFs as a single Network Function Virtualization (NFV) then connect NFVs as a service chain in cloud. Nevertheless, the hardware resource and characteristic of SDN switch that never mention before may waste in this architecture. In this paper, a vCPE framework with multiple flow table management based on cloud is implemented. The proposed of vCPE framework is to create a SDN-enabled VNF using both resources in SDN switch and on cloud and these VNFs can be deployed as edge. The system is also integrated with an application identification engine based on machine learning algorithms thus providing flow control in vCPE framework with confidence. Experimental results show that the framework provide performance in VNF compete over single table SDN application.
+Virtual Customer Premise Equipment (vCPE) is one of the game-changing applications that could reduce OPEX and CAPEX simultaneously. This service is based on a complex software architecture with several technologies behind like Virtualized Network Functions (VNFs) and Service Chaining. Many researches have discussed algorithm or mechanism about linking multiple VNFs as a single Network Function Virtualization (NFV) in order to form a service chain in a virtual environment. Nevertheless, the waste of hardware resource and characteristic of SDN switch has never been mentioned before in this architecture. In this paper, a vCPE framework with multiple flow table management is implemented. This proposed vCPE framework is able to create a SDN-enabled VNF which could be deployed as the edge by employing both resources in SDN switch and on the cloud. Last but not least, the system is also integrated with an application identification engine based on machine learning algorithms thus providing flow control in the vCPE framework with confidence.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -548,52 +544,14 @@ Using this function for limiting applications, we can guarantee that the traffic
 
 
 
-\section{Conclusion}
-The proposed vCPE framework enables deploying NFVs as edge of network and these VNFs are implemented with multiple flow table management model. In this way, the customers only need a SDN switch at local network, and some network functions that could not have been done by single table mechanism are also resolved. The experimental results show that the framework provide performance in VNF compete over single table SDN application. The integration evaluation also show its flexibility to integrate with any bonus application identification system, IDS or IPS.
+\section{Conlusion and Future Works}
+The proposed vCPE framework enables deploying NFVs as edge of network and these VNFs are implemented with multiple flow table management model. In this way, the customers only need a SDN switch at local network, and some network functions that could not be realized by single table mechanism are also resolved. The experimental results show that the framework provides better performance in VNF compete over single table SDN application. The integration evaluation also demonstrates its flexibility to integrate with any other bonus application identification system, IDS or IPS
 
+This paper implemented multiple VNF cascade system over the single-table sdn switch. However, the multi-table environment in experiment basing on the single-table switch environment can't achieve the better performance compare with single-table switch. Although the multi-table based sdn switches are available on the market, those switches have different supporting table for different flow entry which might not be compatible to the customer requirement .If the algorithm is not appropriate designed for the specific network application entry, it will cause system crashed. We plan to design the algorithms specifically for multi-table switch in order to minimize the possibility of the crash of the system and maximize the performance.
 
 \bibliographystyle{ieeetr}
 \bibliography{paper}
 
-\begin{IEEEbiography}
-{Nen-Fu Huang}
-\end{IEEEbiography}
 
-\begin{IEEEbiography}
-{Chia-An Lee} was born in 1988. He received the B.S. degree in Undergraduate Program of Computer Science in 2010 from National Tsing Hua University, Hsinchu, Taiwan.
-Currently he is a Ph.D student of the Department of Computer Science in National Tsing Hua University.
-His research include Software Define Network ,Network Function Virtualization, Moocs, and data analytics.
-\end{IEEEbiography}
-
-\begin{IEEEbiography}
-{Chi-Hsuan Li} received the B.S. degree in Undergraduate Program of Electrical Engineering and Computer Science in 2015 from National Tsing Hua University, Hsinchu, Taiwan. Currently she is a graduate student of the Department of Computer Science in National Tsing Hua University. Her research interest is Software Define Network and Network Function Virtualization.
-\end{IEEEbiography}
-
-\begin{IEEEbiography}
-[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{./avatars/chia-chi.jpg}}]
-{Chia-Chi Chen} was born in 1994 and  received the B.S. degree in Computer Science in 2016 from National Tsing Hua University, Taiwan.
-He is a graduate student and major in Computer Science from National Tsing Hua University now.
-Mr. Chen research chiefly focuses on Software Defined Network in High Speed Network Lab at National Tsing Hua University.
-\end{IEEEbiography}
-
-\begin{IEEEbiography}
-[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{./avatars/i-hsien.jpg}}]
-{I-Hsien Hsu} was born in 1994 and  received the B.S. degree in Computer Science in 2016 from National Tsing Hua University, Taiwan.
-He is a graduate student and major in Computer Science from National Tsing Hua University now. His research mainly focuses on Software Defined Network in High Speed Network Lab at National Tsing Hua University.
-\end{IEEEbiography}
-
-\begin{IEEEbiography}
-[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{./avatars/che-chuan.jpg}}]
-{Che-Chuan Li} was born in Tainan City, Taiwan, in 1993. He received the B.S. degree in computer science from National Tsing Hua University, Hsinchu, Taiwan, in 2015. He is currently pursuing the M.S. degree in computer science at National Tsing Hua University, Hsinchu, Taiwan.
-\end{IEEEbiography}
-
-\begin{IEEEbiography}
-[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{./avatars/chin-hsuan.jpg}}]
-{Ching-Hsuan Chen} received the bachelor degree in Computer Science department in 2016 from National Tsing Hua University, Hsinchu, Taiwan. Now he is a graduate student of the Institute of Communications Engineering in the same university, National Tsing Hua University. His research mainly focuses on Software Define Network and Network Function Virtualization.
-\end{IEEEbiography}
-
-\begin{IEEEbiography}
-{I-Ju Liao}
-\end{IEEEbiography}
 
 \end{document}
