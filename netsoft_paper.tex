@@ -304,7 +304,7 @@ QoS is mainly used for traffic control. Two management functions are provided fo
 \subsubsection{Rate Limitation of Hosts}
 When some hosts utilize a high network bandwidth, the speed for other hosts slows or traffic congestion occurs. To prevent these effects, rate limiting is used to control the rate of traffic from a host. For implementing the host rate limitation, we first create a meter for the desired bandwidth and then add a flow, of which the match is the host’s MAC address and the action is the meter.
 
-This method is illustrated in \ref{fig:mft_qos_rate_host}. In T0, host 1 and host 2 are not limited yet. Because host 2 utilizes a substantial amount of bandwidth from the network in T0–T1  the network administrator sets the host 2 rate limit to 400 Kbps. When the controller receives this request, marked as (a), it creates a meter with meter id = 1 and bandwidth = 400 Kbps and sets the rule in the flow table with the destination MAC address = MAC address of Host 1 and meter = 1. According to our new flow table, it limits the rate of the target host. Then, the traffic from Host 2 is reduced and immediately limited to 400 Kbps. A similar situation occurs for Host 1 in T2. The administrator chooses to set Host 1 under 600 Kbps, marked as (b), and then the traffic from Host 1 is limited to 600 Kbps.
+This method is illustrated in \ref{fig:mft_qos_rate_host}. In T0, host 1 and host 2 are not limited yet. Because host 2 utilizes a substantial amount of bandwidth from the network in T0–T1  the network administrator sets the host 2 rate limit to 400 Kbps. When the controller receives this request, marked as (a), it creates a meter with meter id = 1 and bandwidth = 400 Kbps and sets the rule in the flow table with the destination MAC address = MAC address of host 1 and meter = 1. According to our new flow table, it limits the rate of the target host. Then, the traffic from host 2 is reduced and immediately limited to 400 Kbps. A similar situation occurs for host 1 in T2. The administrator chooses to set host 1 under 600 Kbps, marked as (b), and then the traffic from host 1 is limited to 600 Kbps.
 
 \begin{figure}[!t]
 \centering
@@ -536,7 +536,7 @@ In our experimental environment (Fig. \ref{fig:class_classifying}), we used a mi
 
 Subsequently, the controller received the results from the database and updated the flow information of the applications. Therefore, we could use the flow information (5-tuple and identification results) to limit the application bandwidth.
 
-We selected YouTube to verify our function for limiting applications and used three hosts (Host 1, Host 2, and Host 3) in the same network domain. Then, we limited the bandwidth of YouTube in this network domain (i.e., the sum of bandwidths of Host 1, Host 2, and Host 3).
+We selected YouTube to verify our function for limiting applications and used three hosts (host 1, host 2, and host 3) in the same network domain. Then, we limited the bandwidth of YouTube in this network domain (i.e., the sum of bandwidths of host 1, host 2, and host 3).
 
 Initially, without limitation, the total bandwidth of this network was approximately 3000 to 4000 Kbps (Fig. \ref{fig:mft_qos_rate_domain_app}). At the \nth{8} second, we limited the total bandwidth from YouTube to 2048 Kbps. We observed that the total traffic from YouTube in this network domain immediately decreased. Clearly, the total traffic from YouTube did not exceed the set bandwidth (2048 Kbps) because we limited YouTube in this network domain.
 
