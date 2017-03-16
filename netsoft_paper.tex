@@ -92,7 +92,7 @@ An NFV is a VNF controller, mainly used for addressing stateful processing and N
 \label{fig:desc_nfv_overview}
 \end{figure}
 
-\subsubsection{Stateful Processing Component (VNF Controller in VM/Container)}
+\subsubsection{Stateful Processing Component (VNF Controller in VM or Container)}
 This component is used to control the workflow, maintain the state associated with the VNF, and provide an interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We used an SDN controller to implement the VNF controller; and notably, we use southbound APIs of the SDN controller framework to manage the interface between the stateful and stateless components with the OpenFlow protocol, which was originally designed for this purpose.
 
 \subsubsection{Stateless Processing Component (SDN Datapath)}
@@ -544,7 +544,7 @@ Using this function for limiting applications, we can guarantee that the traffic
 
 
 
-\section{Conlusion and Future Works}
+\section{Conclusion and Future Works}
 The proposed vCPE framework enables deploying NFVs as edge of network and these VNFs are implemented with multiple flow table management model. In this way, the customers only need a SDN switch at local network, and some network functions that could not be realized by single table mechanism are also resolved. The experimental results show that the framework provides better performance in VNF compete over single table SDN application. The integration evaluation also demonstrates its flexibility to integrate with any other bonus application identification system, IDS or IPS
 
 This paper implemented multiple VNF cascade system over the single-table sdn switch. However, the multi-table environment in experiment basing on the single-table switch environment can't achieve the better performance compare with single-table switch. Although the multi-table based sdn switches are available on the market, those switches have different supporting table for different flow entry which might not be compatible to the customer requirement .If the algorithm is not appropriate designed for the specific network application entry, it will cause system crashed. We plan to design the algorithms specifically for multi-table switch in order to minimize the possibility of the crash of the system and maximize the performance.
